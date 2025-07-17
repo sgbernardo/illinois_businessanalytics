@@ -21,7 +21,11 @@ This project utilises grocery transactions to perform basic data preparation and
 ### MBA 563 - Data Toolkit
 **1. ETL and EDA with R (ETL_EDA_UsingR)**
 
-This project explores the ETL and EDA functionalities of R using grocery data in MBA 561 to compare the capabilities of R with PowerBI and Alteryx, both used for data analytics and visualization.
+This project explores the ETL and EDA functionalities of R using grocery data in MBA 561 to compare the capabilities of R with PowerBI and Alteryx, both used for data analytics and visualisation.
+
+**2. Regression Analysis with R (02.Regression_with_R)**
+
+This project examines bike rental data, utilising multiple regression techniques to investigate the seasonal effect on bike rental usage.
 
 ### MBA 564A - Applying Data Analytics in Marketing
 **1. Data Wrangling using R: Application to Netflix Data**
