@@ -8,15 +8,6 @@ output:
       collapsed: true
 ---
 
-## 🧭 Overview & Setup
-
-This tutorial walks you through on:
-
-1. How to preprocess text for text analysis
-2. How to perform a LDA topic modeling analysis
-2. How to plot the top terms for each topic
-
-
 ### 📦 Install and load packages
 
 Install the following packages if you do not have them in your R environment.
