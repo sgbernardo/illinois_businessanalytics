@@ -19,6 +19,9 @@ This project utilises grocery transactions to perform basic data preparation and
 
 
 ### MBA 563 - Data Toolkit
+**1. ETL and EDA with R (ETL_EDA_UsingR)**
+
+This project explores the ETL and EDA functionalities of R using grocery data in MBA 561 to compare the capabilities of R with PowerBI and Alteryx, both used for data analytics and visualization.
 
 ### MBA 564A - Applying Data Analytics in Marketing
 **1. Data Wrangling using R: Application to Netflix Data**
