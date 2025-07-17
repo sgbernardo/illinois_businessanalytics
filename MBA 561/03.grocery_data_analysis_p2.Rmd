@@ -1,0 +1,129 @@
+---
+title: "Grocery Data Analysis (Part 2)"
+author: "Stephen Bernardo"
+date: "2023-08-27"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Importing the necessary packages
+
+```{r include=FALSE}
+#Adding forcats package
+library(forcats)
+
+#Adding dpylr package
+library(dplyr)
+```
+
+## Reading the dataset
+
+```{r}
+df <- read.csv('ities.csv')
+```
+
+## Counting the rows and columns
+
+```{r}
+nrow(df)
+ncol(df)
+```
+
+Number of Rows: __438151__
+
+Number of Columns: __13__
+
+
+## Displaying the dataframe structure
+
+```{r}
+str(df)
+```
+
+__Two Main Points:__
+
+1. There are __438151 observations__ (which corresponds to the number of rows in task 2) and __13 variables__ (which corresponds to the number of columns in task 2) in the dataset.
+
+2. Out of the 13 variables, 10 are __characters__, 2 are __numerical__, and 1 is an __integer__. With the data types given, it would be helpful if some of these are converted (such as Date and Category) for data to be summarized in a more meaningful manner. 
+
+
+## Displaying a summary of the variables
+
+```{r}
+summary(df)
+```
+
+Sample two columns that have data type that is not useful:
+
+1. __Category__ - This can be converted to categorical data using the factor function in order to be helpful in summarizing how much was sold for a given category. This can also be helpful when the company owning the data wants to determine any trends in the amount of returns for an item, such as which category sees the highest amount of sales and returns and why. 
+
+3. __Date__ - Date can be converted to a date data type so that it is possible to summarize data frequency by date. This can be helpful when the company owning the data wants to determine the daily (or weekkly) trends in the amount in a sales of certain products or overall sales.
+
+3. __OperationType__ - This can be converted to categorical data using the factor function in order to be helpful in summarizing how many items are sold and how much in US dollars are sold. This can also be helpful when the company owning the data wants to determine the total amount of returns and which category sees the highest returns (if Category is also converted to a factor).
+
+## Converting to lower case and displaying first 5 rows
+
+__Converting Department and LineItem columns to lower case__
+
+```{r}
+df$Department_lower <- tolower(df$Department)
+df$LineItem_lower <- tolower(df$LineItem)
+```
+
+__Showing the first five rows__
+
+```{r}
+head(df[,c("Department","Department_lower","LineItem","LineItem_lower")],5)
+```
+
+## Explaying why there is an error
+
+Use the “plot” function on Department_lower, and then run that code chunk. You will get an error. .
+
+```{r}
+#plot(df$Department_lower)
+```
+The reason why we have this error is that the plot does not accept character values. Hence, Department_lower needs to be converted to categorical data, which is a finite value.
+
+## Converting to factor type without creating new column
+
+```{r}
+df$Department_lower <- as.factor(df$Department_lower)
+df$LineItem_lower <- as.factor(df$LineItem_lower)
+
+#Checking the new dataframe structure
+str(df)
+```
+
+There were __9 levels__ in the __Department_lower__ column
+
+## Plotting the Department_lower column
+
+```{r}
+#Grouping data according to Department_lower and to sorting to descending order
+df$Department_lower_order <- forcats::fct_infreq(fct_lump(df$Department_lower,n=6))
+
+#Displaying summary 
+summary(df$Department_lower_order)
+
+#Display plot
+plot(df$Department_lower_order)
+```
+
+
+```{r}
+#Grouping data according to Department_lower and summarizing using the count of transactions
+Department_lower_order2 <- forcats::fct_infreq(df$Department_lower)
+
+#summarize
+summary(Department_lower_order2)
+```
+
+Using the plot above, the __most frequent__ Department that occured in the date is __entrees__, with a frequency of __152575__. The __least frequent__ Department in terms of occurrence is __swag__, with a frequency of only 356. 
+
+Note: The The least frequent Department was found by using the fct_infreq function and then summary function to get the results, which is a summary of categories arranged per frequency.
