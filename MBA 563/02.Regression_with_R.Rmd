@@ -1,0 +1,112 @@
+---
+title: "Regression Analysis with R"
+author: "Stephen Bernardo"
+date: "2023-11-18"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Load Libraries
+```{r}
+library(tidyverse)
+library(magrittr)
+library(lubridate)
+```
+
+## Reading Data
+
+```{r}
+df <- read_csv("day.csv")
+```
+
+## Preparing Data
+
+Extract month from dteday column
+
+```{r}
+df$month_name <- month(df$dteday, label = TRUE)
+```
+
+Turning month_name to character data type
+
+```{r}
+df$month_name <- as.character(df$month_name)
+```
+
+## Running regression models
+
+# Model 1
+
+Linear Regression model
+
+```{r}
+model1 <- lm(cnt ~ month_name, data = df)
+
+summary(model1)
+```
+
+The Adjusted R-squared for this is 0.3813. This means taht month_name explains the cnt by the said amount. The reference month used is August because the data is set to charcter type.
+
+
+d)	With either a code chunk or regular text, use the coefficient estimates from Model1 to report the predicted cnt for the months of January and June. 10 points (5 points for each correct prediction)
+
+## Data frame for prediction
+
+```{r}
+new_data <- data.frame(month_name = c("Jan", "Jun"))
+```
+
+## Predicting counts for January and June
+
+```{r}
+predicted_counts <- predict(model1, newdata = new_data)
+```
+
+## Results
+
+```{r}
+result <- data.frame(month_name = new_data$month_name, predicted_counts)
+print(result)
+```
+
+## Model 2
+
+Multiple Linear Regression Model
+
+```{r}
+model2 <- lm(cnt ~ temp + month_name, data = df)
+```
+
+Summary of Model 2
+
+```{r}
+summary(model2)
+```
+
+The coefficient for month_nameJan is in Model1 is -2308.6, whereas it increased to -852.31 in model 2. One possible reason is model fit, which leads to adjusting of existing variables when an additional coefficient is added.  
+
+
+Predicted count for January when the temperature is .25
+
+# Create a data frame for prediction
+```{r}
+new_data2 <- data.frame(temp = 0.25, month_name = "Jan")
+```
+
+# Predict counts for January and June
+
+```{r}
+predicted_counts2 <- predict(model2, newdata = new_data2)
+```
+
+# Display the results
+```{r}
+result2 <- data.frame(month_name = new_data2$month_name, temp = new_data2$temp, predicted_counts2)
+print(result2)
+```
