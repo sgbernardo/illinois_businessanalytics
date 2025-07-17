@@ -6,3 +6,5 @@ release year: The release year.
 duration_mins_season: The length of the show (no. of seasons) or movie (no. of minutes).
 rating: The TV Rating of the movie / show.
 sales: Life-time box office or grosses for the movie / show (in million dollars).
+
+Note: RData and csv are stored in Dropbox.
