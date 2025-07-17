@@ -1,1 +1,28 @@
+## pcard_data_forNLP
+This dataset contains information on purchases made through the purchase card programs administered by the state and higher ed institutions.
+
+Elements:
+Agency.Number: The identifying number for the Oklahoma state agency
+Agency.Description: The name of the Oklahoma state agency
+Cardholder.Name: The last name and first initial of the employee making the purchase with the purchase card
+Item.Description: A description of the item that was purchased
+Amount: The amount spent
+Merchant: The merchant from whom the item was purchased
+Transaction.Date: The date the transaction took place
+Posting.Date: The date the transaction was posted
+"MCC: Merchant category code (MCC) – a standard code the credit card industry uses to categorize
+merchants based on the type of goods or services provided by the merchant. A merchant is assigned
+an MCC by the acquiring bank"
+Month: The month on which the transaction occurred
+Weekday: The day of the week on which the transaction occurred
+Day.Month: The day of the month on which the transaction occurred
+
+##stop_words
+Contains a list of stop words for the p-card control analysis
+
+## press release
+Contains the full press release statement of Apple on September 30, 2023
+
+## MDA
+Contains the full management, discussion and analysis (MD&A) statement of Apple.
 
