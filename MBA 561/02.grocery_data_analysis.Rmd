@@ -1,0 +1,79 @@
+---
+title: "Plotting and Analyizng Grocery Data"
+author: "Stephen Bernardo"
+date: "8/22/2023"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Reading the data file
+
+```{r}
+df <- read.csv('ities.csv')
+```
+
+## Displaying the row and column count
+
+```{r}
+nrow(df)
+ncol(df)
+```
+
+This dataframe has 438151 rows and 13 columns.
+
+## Displaying the structure of the dataframe, df
+
+```{r}
+str(df)
+```
+
+The dataframe structure shows that there are 8899 observations (rows) and 13 variables (columns). The dataframe structure shows that one variable, Quantity, is an integer (int), 2 variables have numerical values (num), and the remaining 9 variables are characters (chr). 
+
+## Checking the length of unique dates and cashier name.
+
+__True or False: Every transaction is summarized in one row of the dataframe. Display at least one calculation in the code chunk below. Below the calculation(s), clearly indicate whether the statement is true or false and explain how the output of your calculation(s) supports your conclusion.__
+
+```{r message=FALSE, warning=FALSE}
+length(unique(df$Date))
+length(unique(df$CashierName))
+```
+
+True. The transactions can be summarized into one row of the data frame by grouping similar transactions after. We can see from the sample calculation above that using:
+
+- Date: There are 1,021 unique dates for the 438,151 transactions (rows) in the dataframe. This means that the transactions can be grouped according to 1,021 unique dates. 
+
+- CashierName: There are 56 cashiers for the 438,151 transactions (rows) in the dataframe. This means that the transactions can be grouped according to the 56 unique cashiers.
+
+## Displaying the summaries of the Price, Quantity, and TotalDue columns
+
+```{r}
+summary(df[,c('Price','Quantity','TotalDue')])
+```
+ Price and TotalDue:
+ 
+ - There were 12 null values (indicated by NA)
+ 
+ - The min value is -5740.51 and the max is 21449.57, which indicates that there is a high variability between the observation data, as compared to the 1st quartile, median, mean, and 3rd quartile.
+ 
+ Quantity: 
+ 
+ - The min, 1st. quartile, median, and 3rd quartile is 1.0000 while the mean is 1.177, which indicates that majority of the observations are 1.000. 
+ 
+ - The max value is 815.000, compared to a mean value of 1.177, a min value of 1.000 and median value of 1.000. This implies that majority of the observations is 1.000. 
+ 
+ 
+## Displaying the boxplots of the log values for the Price, Quantity and TotalDue columns
+
+```{r}
+boxplot(log(df[,c('Price','Quantity','TotalDue')]))
+```
+
+Three insights:
+
+1. The boxplot shows that there are a number of outliers, as indicated by the dots (observation data) that are beyond the 1st and 4th quartiles, as well as the interquartile range. This is consistent with the output from task 5 because for all variables (Price, Quantity, and TotalDue), the min and max values are significantly different from the 1st quartile, mean, and median, and the 3rd quartile. In addition, there were also null data (indicated by NaNs) that were not included in this plot.
+
+2. All outliers in Quantity are above the median (indicated by the whisker), which implies that all values are above 0. This is consistent with the task 5 results because we saw that the min. is 1, which indicates that there are no negative values. In contrast, there are a number of outliers in Price and TotalDue that are below 0, which indicates that there were negative prices in the dataset. This is consistent with task 5 because we see that the min. value for both Price and Total due is -5740.51. 
+
+
+3. The interquartile range (indicated by the gray area that surrounds the whisker, the median) is wider in the Price and TotalDue columns than in the quantity column. This is consistent with task 5 because we see that the 1st quartile, median, and 3rd quartile for Quantity are all 1.000, while the values for the same statistic for Price and TotalDue are different. 
