@@ -1,5 +1,5 @@
 # Learnings from the Business Analytics Focus Area
-This repository serves as an exhibit of what I learned in the business analytics focus area during my time at the University of Illinois at Urbana-Champaign. I would like to thank all my professors and fellow students for the learning experience.
+This repository serves as an exhibit of what I learned in the business analytics focus area during my time at the University of Illinois at Urbana-Champaign. I want to thank all my professors and fellow students for the learning experience. Most of the assignments were completed in R, a programming language commonly used in academia.
 
 ## Projects in this Repository
 
