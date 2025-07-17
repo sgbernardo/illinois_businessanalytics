@@ -1,0 +1,113 @@
+---
+title: "ETL and EDA in R"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+
+## Loading the packages needed for EDA and ETL
+
+```{r}
+library(lubridate)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+```
+
+## Loading the data
+
+```{r}
+df <- read.csv('mod4peerrevdata.csv')
+```
+
+## Transforming data types
+
+Transforming Category to factor datatype
+
+```{r}
+df$Category = as.factor(df$Category)
+```
+
+Transforming Date to mdy
+
+```{r}
+df$Date = mdy(df$Date)
+```
+
+## Displaying and interpreting the summaries for the Quantity and Price 
+
+```{r}
+summary(df$Quantity,df$Price)
+```
+
+## Counting NA values in each variable
+
+```{r}
+summary(df)
+```
+
+```{r}
+df_new <- na.omit(df)
+```
+
+## Bar chart for the Category column. 
+
+The bar chart should display the frequency of each category. 
+
+```{r}
+ggplot(df_new,aes(x=Category,y=Department)) + 
+  geom_col() 
+```
+
+## Bar chart of departments and their revenue 
+
+Create revenue
+
+```{r}
+df_new$Revenue=(df_new$Price*df_new$Quantity)
+```
+
+Create bar chart
+
+```{r}
+ggplot(df_new,aes(x=reorder(Department,-Revenue),y=Revenue)) + 
+  geom_col()
+```
+
+
+
+## Box plot of the price column
+```{r}
+ggplot(df_new,aes(x=Department,y=Price)) + geom_boxplot()
+```
+
+## Histogram of the price column
+```{r}
+ggplot(df_new, aes(Price)) +
+ geom_histogram(bins = 15)
+```
+
+## Box plot of the quantity column
+```{r}
+ggplot(df_new,aes(x=Department,y=Quantity)) + geom_boxplot()
+```
+
+## Histogram of the quantity column
+```{r}
+ggplot(df_new, aes(Quantity)) +
+ geom_histogram(bins = 15)
+```
+
+## Comparison of PowerBI and Alteryx versus R for ETL and EDA. 
+
+Power BI, Alteryx, and R are powerful tools for analyzing revenue per department, each with its own strengths and weaknesses.
+
+Power BI, a data visualization and business intelligence tool, excels in its user-friendly interface, making it easy for non-technical users to create interactive reports and dashboards. Its drag-and-drop functionality and seamless integration with other Microsoft products facilitate ease of use. However, Power BI's primary focus is on data visualization and reporting, limiting its advanced data transformation capabilities.
+
+Alteryx is known for its data preparation and transformation capabilities. It allows users to clean and preprocess data effectively. While it may have a steeper learning curve compared to Power BI, it offers robust data analytics features, enabling in-depth revenue analysis. However, Alteryx might be more complex for beginners and comes at a higher cost.
+
+R, on the other hand, offers unparalleled flexibility and statistical power. It's open-source, making it cost-effective, and provides advanced analytical capabilities. However, R often requires strong programming skills and data wrangling expertise, which can be a hurdle for non-technical users.
+
+In terms of replicability, Alteryx and R offer better control and automation of data workflows. Power BI is more accessible for sharing results with non-technical stakeholders. Regarding scalability, Alteryx can handle large datasets efficiently, but R offers the most flexibility in terms of analysis. In summary, the choice among these tools depends on user expertise, project requirements, and available resources.
