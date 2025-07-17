@@ -1,9 +1,6 @@
 # Business Analytics Focus Area
 This repository serves as an exhibit what I learned in the business analytics focus area during my time at the University of Illinois at Urbana-Champaign. I want to thank all my professors and fellow students for the learning journey.
 
-This contains all work done in the following courses:
-MBA 561 - Introduction to Business Analytics
-
 ## Projects in this Repository
 
 ### MBA 561 - Introduction to Business Analytics
