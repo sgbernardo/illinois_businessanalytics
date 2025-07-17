@@ -17,22 +17,4 @@ This project serves as an introduction to the business analytics field, where I 
 
 This project utilised data wrangling in R, leveraging Netflix data as detailed below. I was also able to apply subsetting, data analysis, and regression techniques, where I found that the time_since_release variable is statistically significant in determining sales.
 
-Note on the Netflix data set:
-
-type: TV show or movie.
-
-title: The name of the title.
-
-country: Country where released initially. 
-
-date_added: Date added to Netflix.
-
-release year: The release year.
-
-duration_mins_season: The length of the show (no. of seasons) or movie (no. of minutes).
-
-rating: The TV Rating of the movie / show.
-
-sales: Life-time box office or grosses for the movie / show (in million dollars).
-
 ### MBA 564B - Applying Data Analytics in Accounting
