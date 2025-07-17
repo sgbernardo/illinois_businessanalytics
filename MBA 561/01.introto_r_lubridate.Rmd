@@ -1,0 +1,74 @@
+---
+title: "Introduction to Business Analytics with R"
+author: "Stephen Bernardo"
+date: "2023-09-02"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Task 1
+Use a code chunk to create a datetime object d from the following character string that represents November 14, 2025: “11/20/2025”. Only use base R. Do not use functions from the lubridate package.
+
+```{r}
+d <- c("11/20/2025")
+```
+
+This code chunk will create the d dataframe
+
+## Task 2
+Use a new code chunk to check the data type of the d object by printing it. If it is in a date format, then it will show up as “2025-11-20”.
+
+```{r}
+class(d)
+```
+
+Checking what is the type of data for d
+
+## Task 3
+If necessary, install the lubridate package using the Package pane in RStudio. In a new code chunk, load the lubridate package.
+
+```{r}
+library(lubridate)
+```
+
+This is to load installed lubridate package
+
+## Task 4
+In a new code chunk, use the appropriate functions from the lubridate package to extract the year, month number, week number and weekday number from the object d created above. Save them as objects name d_year, d_month, d_week, and d_day respectively. Include code to display each of the four objects. 
+
+```{r}
+#Parsing the date first as it's in character format
+d_parsed <- mdy(d)
+
+#Extracting the year, month, week, date
+d_year <- year(d_parsed)
+d_month <- month(d_parsed)
+d_week <- week(d_parsed)
+d_day <- day(d_parsed)
+```
+
+This is to create new object as per instruction
+
+## Task 5
+Use a new code chunk to create another datetime object, d_25, using the object d, where d_25 is the date 25 days from now. Include code to display d_25.
+
+```{r}
+d_25 <- mdy(d) +25
+print(d_25)
+```
+
+This is to show the date that is 25 days after d
+
+## Task 6
+Finally, use a new code chunk to calculate and display the difference between d and d_25 using the difftime function and check whether the difference is 25 days.
+
+```{r}
+print(difftime(d_25,mdy(d)))
+```
+
+To confirm that the difference between d_25 and d is 25 days.
