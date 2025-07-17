@@ -5,7 +5,7 @@ This repository serves as an exhibit what I learned in the business analytics fo
 
 ### MBA 561 - Introduction to Business Analytics
 
-Introduction to Business Analytics with R (intro_r)
+**1.Introduction to Business Analytics with R (intro_r)**
 
 This project serves as an introduction to the business analytics field, where I learned basic functions from the lubridate package. 
 
