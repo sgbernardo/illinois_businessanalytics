@@ -1,0 +1,15 @@
+The ities.csv data set contains the following elements:
+
+Date: Date of Transaction
+Operation Type: Whether Sales or Return
+CashierName: Name of the cashier
+Lineltem: The food item sold
+Department: The department which the lineitem belongs to
+Category: Broader class than department. Each department belongs to one of the categories
+RegisterName: Name of the register in which transaction is recorded
+StoreNumber: Store ID
+TransactionNumber Transaction ID: 
+CustomerCode: Customer ID
+Price: Price of the Lineitem sold
+Quantity: Number of units of the Lineitem sold
+TotalDue: Product of Price per unit and Quantity sold
