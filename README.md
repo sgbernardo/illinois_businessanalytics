@@ -13,7 +13,7 @@ This project serves as an introduction to the business analytics field, where I 
 
 This project utilises grocery transactions to perform basic data preparation and inspect variables using R. In addition, data analysis using basic statistics and box plots was also used to analyse outliers.
 
-**2. Grocery Data Analysis - Part 2 (grocery_data_analyis_p2)**
+**3. Grocery Data Analysis - Part 2 (grocery_data_analyis_p2)**
 
 This project utilises grocery transactions to perform basic data preparation and inspect variables using R. Additionally, data analysis using a bar plot was employed to identify the most frequently and least frequently purchased items. I found through the bar plot that the top three most purchased items are entrees, kabobs, and sides. 
 
