@@ -1,0 +1,204 @@
+---
+title: "Twitter LDA Topic Modeling"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      collapsed: true
+---
+
+## 🧭 Overview & Setup
+
+This tutorial walks you through on:
+
+1. How to preprocess text for text analysis
+2. How to perform a LDA topic modeling analysis
+2. How to plot the top terms for each topic
+
+
+### 📦 Install and load packages
+
+Install the following packages if you do not have them in your R environment.
+
+- `tidyverse` is a collection of R packages for data science
+- `tidytext` is used to preprocess data for text mining
+- `topicmodels` is used to perform Latent Dirichlet Allocation (LDA) topic modeling analysis
+- `reshape2` is a dependency that may need to be installed manually
+- `LDAvis` is used to interactively visualize topic modeling results using a web-based viewer
+
+Note that the result of your analysis may differ based on the `tidytext` version. Specifically, the tokenizing logic from version `0.4.0` (released on December 20th, 2022) and above has been updated. `token = "tweets"` option has been deprecated and will throw an error. This notebook assumes that you're using `tidytext` version `>=0.4.0`.
+
+```{r message=FALSE, warning=FALSE}
+# uncomment and run the lines below if you need to install these packages
+
+# install.packages("tidyverse")
+# install.packages("tidytext")
+# install.packages("topicmodels")
+# install.packages("reshape2")
+# install.packages("LDAvis")
+# install.packages("servr")
+```
+
+Load packages.
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(tidytext)
+library(topicmodels)
+library(reshape2)
+library(LDAvis)
+library(servr)
+```
+
+
+### 📃 Read CSV file
+
+```{r}
+df_tweets = read_csv('Lululemon-tweets.csv')
+df_tweets %>% head()
+```
+
+Print out the number of rows.
+
+```{r}
+nrow(df_tweets)
+```
+
+
+
+## 🔨 Text Pre-processing
+
+### 📌 Add row number to df_tweets
+
+Create a new column named `row_num` with unique values in each row. This allows us to group by each tweet after we tokenize the tweet text.
+
+```{r}
+df_tweets$row_num <- seq_len(nrow(df_tweets))
+df_tweets %>% head() %>% select(-text)
+```
+
+
+### 🔗 Remove URLs
+
+Many tweets contain URL strings in the form of "https://t.co/somestring". Remove these URL strings using a regular expression
+
+```{r}
+df_tweets$text <- df_tweets$text %>%
+  str_remove_all("https://t.co/\\w+")
+
+df_tweets %>%
+  select(text) %>%
+  head()
+```
+
+
+### ⚔️ Tokenize and normalize
+
+Tokenize tweet texts and normalize the tokens.
+
+```{r}
+# tokenize using unnest_tokens()
+# this also normalizes the tokens (lowercase, remove punctuations except Twitter-specific characters for mentions, tickers, and URLs)
+# token = "tweets" preserves usernames and hashtags
+df_tokens <- df_tweets %>%
+  tidytext::unnest_tokens(input = text, output = word)
+
+df_tokens %>% head(n = 10)
+```
+
+
+
+### 🪓 Remove stop words 
+
+Stop words are words that are commonly used and likely unimportant. Examples include "is", "by", "the", "a", etc.
+
+```{r}
+# remove stop words using anti_join 
+# and remove tokens with only 1 or 2 characters
+df_tokens <- df_tokens %>%
+  anti_join(tidytext::stop_words, by = "word") %>%
+  filter(nchar(word) >= 3)
+
+df_tokens %>% head(n = 10)
+```
+
+
+### 🔮 Most frequent tokens
+
+```{r}
+df_tokens %>% count(word) %>% arrange(desc(n))
+```
+
+
+## 🔨 LDA Analysis
+
+### 📐 Create a Document-term Matrix
+
+- Each row in our Document-term Matrix represents a tweet.
+- Each column represents a word (e.g., "bankruptcy").
+- Each cell contains the frequency of the word.
+
+```{r}
+dtm <- df_tokens %>%
+  count(row_num, word) %>%
+  cast_dtm(document = row_num, term = word, value = n)
+
+dtm
+```
+
+### 🧪 Run LDA with 3 topics (`k = 3`)
+
+```{r}
+tweets_lda <- topicmodels::LDA(dtm, k = 3, control = list(seed = 12))
+tweets_lda
+```
+
+
+Print out per-topic-per-word probabilities.
+
+**beta** values are the probabilities of words in each topic.
+
+```{r}
+tweet_topics <- tidytext::tidy(tweets_lda, matrix = "beta")
+
+top_terms <- tweet_topics %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 20) %>% 
+  ungroup() %>%
+  arrange(topic, -beta)
+
+top_terms
+```
+
+
+### 📊 Plot the top 20 terms
+
+```{r}
+top_terms %>%
+  mutate(term = reorder_within(term, beta, topic)) %>%
+  ggplot(aes(beta, term, fill = factor(topic)))+
+  geom_col(show.legend = FALSE) +
+  theme_minimal() +
+  ggtitle("Top terms by topic") +
+  facet_wrap(~topic, scales = "free") +
+  scale_y_reordered()
+```
+
+### 🌌 (Optional) Intertopic Distance Map
+
+The intertopic distance map will not be shown in the knitted HTML file. Run the R notebook to see the intertopic distance map.
+
+```{r}
+post <- topicmodels::posterior(tweets_lda)
+mat <- tweets_lda@wordassignments
+json <- LDAvis::createJSON(
+    phi = post$terms, 
+    theta = post$topics,
+    vocab = colnames(post$terms),
+    doc.length = slam::row_sums(mat, na.rm = TRUE),
+    term.frequency = slam::col_sums(mat, na.rm = TRUE)
+)
+serVis(json)
+```
+

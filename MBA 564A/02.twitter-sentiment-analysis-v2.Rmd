@@ -1,0 +1,159 @@
+---
+title: "Twitter Sentiment Analysis"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      collapsed: true
+---
+
+## 🧭 Overview & Setup
+
+This notebook walks you through on:
+
+1. How to run a sentiment analysis on tweets using the VADER package
+2. How to interpret the VADER scores
+3. How to view top positive/negative tweets
+4. How to visualize the compound scores distribution
+
+
+
+### 📦 Install and load packages
+
+Install `tidyverse` and `vader` if you do not have them in your R environment.
+
+- `tidyverse` is a collection of R packages for data science
+- `vader` (Valence Aware Dictionary and sEntiment Reasoner) is a rule-based sentiment analysis tool specifically attuned to social media text
+
+```{r message=FALSE, warning=FALSE}
+# uncomment and run the lines below if you need to install these packages
+# install.packages("tidyverse")
+# install.packages("vader")
+```
+
+Load packages.
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(vader)
+```
+
+
+
+### 📃 Read CSV file
+
+```{r}
+df_tweets = read_csv('lululemon-tweets.csv')
+df_tweets %>% head()
+```
+
+Print out the number of rows.
+
+```{r}
+nrow(df_tweets)
+```
+
+
+
+## 🔮 Sentiment Analysis
+
+### 📌 Sample usage
+
+To analyze a piece of text using VADER, use the `get_vader()` function. Here is an example using one of the tweets.
+
+- `compound` score is the "overall" score between -1 (most extreme negative) and +1 (most extreme positive).
+- `pos`, `neg`, and `neu` are ratios for proportions of text that fall in each category. These should all add up to be 1.
+- We are mainly interested in the compound score.
+
+```{r}
+get_vader("Got my BeautyBase merch I am happy I got the first batch 🥰")
+```
+
+
+
+### 🧮 Calculate scores for all tweets
+
+Because we have a DataFrame (`tibble`) that contains tweet texts in the `text` column, we will need to run `get_vader()` on each row of the `text` column. We can do this by using the `lapply()` function.
+
+The code below stores the VADER results to a list variable named `vscores`. Note that this may take a while (a few minutes) if you have thousands of tweets.
+
+```{r}
+vscores <- df_tweets$text %>% lapply(get_vader)
+```
+
+
+Extract compound score and positive/neutral/negative percentages into separate columns.
+
+```{r}
+df_tweets <- df_tweets %>% mutate(
+  compound = vscores %>% sapply(function(v) { as.numeric(v["compound"]) }),
+  pos = vscores %>% sapply(function(v) { as.numeric(v["pos"]) }),
+  neu = vscores %>% sapply(function(v) { as.numeric(v["neu"]) }),
+  neg = vscores %>% sapply(function(v) { as.numeric(v["neg"]) }),
+)
+df_tweets
+```
+
+
+
+### 👍 50 most positive tweets
+
+```{r}
+df_tweets %>% 
+  arrange(desc(compound)) %>% 
+  select(text, username, compound, pos, neu, neg) %>%
+  head(50)
+```
+
+
+
+### 👎 50 most negative tweets
+
+```{r}
+df_tweets %>% 
+  arrange(compound) %>% 
+  select(text, username, compound, pos, neu, neg) %>%
+  head(50)
+```
+
+
+
+### ⚖️ Average compound score
+
+```{r}
+mean(df_tweets$compound)
+mean(df_tweets$pos)
+mean(df_tweets$neu)
+mean(df_tweets$neg)
+```
+
+
+
+### 📦 Box plot of compound scores
+
+The box plot below gives you the spread and skewness of compound scores.
+
+```{r}
+df_tweets %>% 
+  ggplot(aes(x=compound)) + 
+  theme_classic() +
+  geom_boxplot()
+```
+
+
+
+### 📊 Histogram of compound scores
+
+The histogram below gives you an approximate distribution of the compound scores. 
+
+```{r}
+df_tweets %>% 
+  ggplot(aes(x=compound)) + 
+  theme_classic() +
+  geom_histogram(bins = 20, color="black", fill="white")
+```
+
+
+
+

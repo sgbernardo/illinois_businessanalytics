@@ -1,0 +1,249 @@
+---
+title: "Twitter Network Analysis Based on Retweets"
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float:
+      collapsed: true
+---
+
+## 🧭 Overview & Setup
+
+This tutorial walks you through on:
+
+1. Extract usernames from retweets using a regular expression
+2. How to create a directed graph data structure
+3. How to run a network analysis based on the number of **retweets**
+4. How to create a graph visualization
+
+
+### 📦 Install and load packages
+
+Install `tidyverse` and `igraph` if you do not have them in your R environment.
+
+- `tidyverse` is a collection of R packages for data science
+- `igraph` is a collection of network analysis tools
+
+```{r message=FALSE, warning=FALSE}
+# uncomment and run the lines below if you need to install these packages
+# install.packages("tidyverse")
+# install.packages("igraph")
+```
+
+Load packages.
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(igraph)
+```
+
+
+
+## 🔍 Data Preparation
+
+### 📃 Read CSV file
+
+Ensure you use a retweets dataset. Your filename should end with `-retweets.csv` (e.g., `Tesla-retweets.csv`).
+
+```{r}
+df_retweets = read_csv('Lululemon-retweets.csv')
+df_retweets %>% head()
+```
+
+Print out the number of rows.
+
+```{r}
+nrow(df_retweets)
+```
+
+
+
+### 📌 Handle usernames
+
+#### Rename `username` column
+
+Rename `username` column to `retweet_username`. This column contains the usernames who retweeted other tweets.
+
+```{r}
+# rename username column to retweet_username
+# retweet_username column contains the username who retweeted the original tweet
+if ("username" %in% colnames(df_retweets)) {
+  df_retweets <- df_retweets %>% rename(
+    retweet_username = username
+  )
+}
+
+df_retweets %>% head()
+```
+
+
+#### Extract original authors
+
+Every retweet starts with "RT @" and is followed by the original author's username. Here is a sample retweet.
+
+> RT @original_user: Here is a tweet.
+
+Extract usernames using a regular expression.
+
+```{r}
+# extract username using regular expression
+# "^" refers to the beginning of a line
+# "\w+" matches one or more alphanumeric and underscore characters
+# "[, 2]" only extracts the username portion
+df_retweets$original_username <- str_match(df_retweets$text, "^RT @(\\w+)")[, 2]
+
+# display the mentions column in the first few rows
+df_retweets %>% head() %>% select(text, original_username)
+```
+
+
+
+## 🚀 Perform network analysis
+
+### 🐬 Create a DataFrame that describes a directed graph
+
+Each retweet can be represented as a directed edge in a graph that connects *from* the retweeter's username *to* the original author's username.
+
+```{r}
+edges <- df_retweets %>% 
+  select(retweet_username, original_username) %>% 
+  rename(
+    from = retweet_username,
+    to = original_username
+  )
+
+edges <- unnest(edges, cols=to)
+
+# display 20 first rows
+head(edges, n = 20)
+```
+
+
+### 🧪 Create a graph
+
+We created the `edges` DataFrame in one of the previous steps. We can build a graph object using the DataFrame. `directed = TRUE` parameter is used to create a directed graph.
+
+```{r}
+graph <- graph_from_data_frame(edges, directed = TRUE)
+
+# print graph
+graph
+```
+
+
+### 🧮 Calculate in-degree centrality
+
+```{r}
+# calculate degree centrality
+deg <- degree(graph, mode = "in")
+
+# sort by degree centrality in descending order
+deg <- deg %>%
+  sort(decreasing = TRUE)
+
+deg %>% head()
+```
+
+
+Check the number of vertices (i.e., users) in our graph
+
+```{r}
+gorder(graph)
+```
+
+
+
+### 🧞 Top influencers by number of retweets
+
+Identify the top 20 users by number of retweets.
+
+```{r}
+top20 <- deg %>% head(n = 20)
+top20 %>% head(20)
+```
+
+
+`top20` is a named numeric vector. Convert it to a DataFrame. This will allow us to add new columns.
+
+```{r}
+top20 <- top20 %>%
+  enframe(name = "username", value="retweeted_count") 
+
+top20
+```
+
+
+```{r}
+ggplot(
+  data = head(top20, n = 20),
+  aes(x = retweeted_count, y = reorder(username, retweeted_count))
+) +
+  geom_col() +
+  theme_classic() +
+  xlab("Number of Retweets by Other Users") +
+  ylab("Username")
+```
+
+
+## ✨ Graph visualization
+
+### 🔨 Network graph of all users
+
+```{r}
+plot(
+  graph,
+  layout = layout_with_fr(graph),
+  main="Retweets network graph of all users",
+  edge.arrow.size = 0.15,
+  edge.color = "#BBDFFF",
+  vertex.label = NA,
+  vertex.color = "#20DFFF",
+  vertex.frame.color = "#00BFFF",
+  vertex.size = 0.2
+)
+```
+
+
+
+### 💎 Top retweeted users within the largest connected component
+
+```{r warning=FALSE}
+# find the connected components of our graph
+gc <- igraph::components(graph)
+
+# delete users that are outside the largest connected component
+graph_filtered <- delete_vertices(graph, gc$membership != which.max(gc$csize))
+
+# calculate in-degrees within the filtered graph
+filtered_deg_in <- degree(graph_filtered, mode = "in")
+vertex_size <- pmax(pmin(filtered_deg_in * 0.08, 6), 0.3)
+
+# find the top 12 retweeted users within the filtered graph
+top_retweeted_users <- filtered_deg_in %>%
+  sort(decreasing = TRUE) %>%
+  head(n = 12) %>%
+  names()
+
+plot(
+  graph_filtered,
+  layout = layout_with_fr(graph_filtered),
+  main="Top retweeted users within the largest connected component",
+  edge.arrow.size = 0.15,
+  edge.color = "#BBDFFF",
+  vertex.label = ifelse(
+    names(filtered_deg_in) %in% top_retweeted_users,
+    V(graph_filtered)$name,
+    NA
+  ),
+  vertex.label.cex = 0.8,
+  vertex.label.color = "#000000",
+  vertex.color = "#20DFFF",
+  vertex.frame.color = "#00BFFF",
+  vertex.size = vertex_size
+)
+```
+
+
+
+
