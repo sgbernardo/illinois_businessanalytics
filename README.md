@@ -13,7 +13,8 @@ This project serves as an introduction to the business analytics field, where I 
 ### MBA 563 - Data Toolkit
 
 ### MBA 564A - Applying Data Analytics in Marketing
-**1. Data Wrangling using R: Application to Netflix Data
+**1. Data Wrangling using R: Application to Netflix Data**
+
 This project utilised data wrangling in R, leveraging Netflix data as detailed below. I was also able to apply subsetting, data analysis, and regression techniques, where I found that the time_since_release variable is statistically significant in determining sales.
 
 Note on the Netflix data set:
