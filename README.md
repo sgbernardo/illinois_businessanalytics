@@ -17,8 +17,6 @@ This project serves as an introduction to the business analytics field, where I 
 
 This project utilised data wrangling in R, leveraging Netflix data as detailed below. I was also able to apply subsetting, data analysis, and regression techniques, where I found that the time_since_release variable is statistically significant in determining sales.
 
-### MBA 564B - Applying Data Analytics in Accounting
-
 **2. Lululemon Social Media Marketing Strategy Report**
 
 This project analysed Twitter conversations about Lululemon by applying advanced text analytics and network analysis techniques. The scope included summarising public sentiment using sentiment analysis, uncovering major discussion topics with LDA topic modelling, and extracting key conversational patterns using n-gram analysis. To understand social influence, the project also conducted a network analysis of retweets to identify top influencers and quantify their impact on brand perception.
@@ -26,3 +24,5 @@ This project analysed Twitter conversations about Lululemon by applying advanced
 The analysis was performed using R, leveraging the provided tweets and retweets datasets. Sentiment analysis assessed whether online discussions reflected positively or negatively on the brand. LDA topic modelling was used to reveal underlying themes and frequent discussion points. Network analysis mapped the retweet relationships to highlight users who played a central role in amplifying messages about the brand. 
 
 The findings show that Lululemon may need to further improve pricing strategy, customer service, and social media marketing.
+
+### MBA 564B - Applying Data Analytics in Accounting
