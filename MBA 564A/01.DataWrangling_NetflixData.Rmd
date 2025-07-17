@@ -1,0 +1,409 @@
+---
+title: "Data Wrangling using R: Application to Netflix Data"
+author: "Stephen Bernardo"
+date: "2024-01-21"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Package Loading
+
+Load Lubridate
+```{r}
+library(lubridate)
+```
+
+# Data Loading
+
+Load your dataset NetflixData.csv Download NetflixData.csv Download NetflixData.csvin R using read.csv or readr::read_csv(). Store the DataFrame to a new variable named netflix.
+
+```{r}
+netflix <- read.csv('NetflixData.csv')
+```
+
+
+### Create and Inspect Columns
+1. Extract the value of year from Sys.time() and save it in a new variable named current_year.
+```{r}
+netflix$current_year <- year(Sys.time())
+```
+
+- Inspect the class of current_year. 
+```{r}
+class(netflix$current_year)
+```
+
+- Convert it to a numeric data class.
+```{r}
+netflix$current_year <-as.numeric(netflix$current_year)
+```
+
+
+2. Create a new column in the netflix DataFrame you created in question (1).
+Name this column time_since_release and assign it the value of the current year minus the release_year.
+
+This variable will give you the number of years since the release of the tv show/movie.
+
+```{r}
+netflix$time_since_release <- netflix$current_year - netflix$release_year
+```
+
+  
+3. Create a new column named title_length.
+Assign it the value of number of characters in the title of each of the tv show/movie.
+
+
+```{r}
+netflix$title_length <- nchar(netflix$title)
+```
+
+4. Inspect the class of each column in the dataframe.
+Instead of doing this one by one for each column, can you write a "for" loop over the columns of the dataframe that prints the class of each column?
+HINT: Inside the loop, autoprint is turned off.
+
+
+```{r}
+for (column in names(netflix)) {
+  column_class <- class(netflix[[column]])
+  cat("Column '", column, "' has class: ", column_class, "\n")
+}
+```
+
+# Data Summary Table
+
+1. Compute the descriptive statistics (mean, median, min, max) for the variable you created time_since_release.
+
+```{r}
+summary(netflix$time_since_release)
+```
+
+
+2. Can you compute the descriptive statistics for all the numerical variables in the data without repeating your code for each variable?
+HINT: You can use functions like lapply() or sapply() in R to do this.
+```{r}
+#get all numeric columns
+numeric_columns <- sapply(netflix, is.numeric)
+
+#print statistics
+print(lapply(netflix[, numeric_columns], summary))
+```
+
+3. Can you create a function that takes two inputs: input_data (a dataframe) and id (a column name).
+Here are some helpful hints:
+- The goal of the function is to compute the descriptive statistics (mean, median, min, max) for the variable in the column id of the dataframe input_data if the column is numeric or integer.
+- Use the IF function inside the function to check if the class is integer or numeric
+Example code:
+if(class(input_data[,id]) == "numeric" | class(input_data[,id]) == "integer")
+- Create a DataFrame called summary within the loop function that has the required columns (variable, mean, median, min, max). Each column takes the appropriate value (e.g., mean(input_data[,id]) will give you the mean of column id in the input_data).
+- The function should return the summary DataFrame.
+Example code: return(summary)
+- Invoke the function you created for the variable time_since_release (Hint: use the column id to call the function).
+Save the output of the function to a new variable named output_data.
+```{r}
+compute_summary_statistics <- function(input_data, id) {
+  # Check if the column is numeric or integer
+  if (class(input_data[, id]) == "numeric" | class(input_data[, id]) == "integer") {
+    
+    # Create a DataFrame to store summary statistics
+    summary <- data.frame(
+      variable = id,
+      mean = mean(input_data[, id], na.rm = TRUE),
+      median = median(input_data[, id], na.rm = TRUE),
+      min = min(input_data[, id], na.rm = TRUE),
+      max = max(input_data[, id], na.rm = TRUE)
+    )
+    
+    # Return the summary DataFrame
+    return(summary)
+  } else {
+    # If the column is not numeric or integer, print a message and return NULL
+    cat("The specified column is not numeric or integer.\n")
+    return(NULL)
+  }
+}
+
+```
+
+Invoking function with the time_since_release column
+
+```{r}
+output_data <- compute_summary_statistics(input_data = netflix, id = 'time_since_release')
+```
+
+Printing the output
+```{r}
+print(output_data)
+```
+
+# Data Analysis and Regressions
+
+1. Split the data into two dataframes named tv_shows and movies.
+Hint: Use subsetting techniques in R using square brackets.
+```{r}
+# Create a dataframe for TV shows
+tv_shows <- netflix[netflix$type == "TV Show", ]
+
+# Create a dataframe for Movies
+movies <- netflix[netflix$type == "Movie", ]
+```
+
+
+2. Run two different regression models for tv_shows only, to examine the relationship between sales and other variables.
+The dependent variable is sales.
+Model 1: The independent variables are time_since_release, title_length, duration_min_season.
+Model 2: In addition to Model 1 variables, include country and rating in your regression.
+
+__Model 1__
+
+Regression
+
+```{r}
+tv_show_model1 <- lm(sales ~ time_since_release + title_length + duration_min_season, data = tv_shows)
+
+# Summary of Model 1
+summary(tv_show_model1)
+```
+
+Interpretation
+
+a. coefficients: 
+- The intercept is 10.473339.
+- One unit increase in time_since_release will increase sales by 0.110952
+- One unit increase intitle_length will increase sales by 0.003825
+- One unit increase duration_min_season will decrease sales by -0.04126
+
+b. p-values: The p-values show that only __time_since_release__ is significant, since it is the only variable where p-values were less than the the p-value is less thanthe thresholds of 0, 0.001, 0.01, 0.05, and 0.1.
+
+c. R-squared: The adjusted R-squared is __0.1935__, this means that only around 19.35% of the variability in sales is explained by the independent variables. This means that most of the variability in sales is unexplained by the model and there may be additional variables that explain the variability in sales.
+
+__Model 2__
+
+```{r}
+tv_show_model2 <- lm(sales ~ time_since_release + title_length + duration_min_season + country + rating, data = tv_shows)
+
+# Summary of Model 2
+summary(tv_show_model2)
+```
+
+Interpretation:
+
+a. coefficients: 
+- The intercept is 10.8845675
+- One unit increase in time_since_release will increase sales by 0.1126505
+- One unit increase intitle_length will increase sales by 0.003825
+- One unit increase duration_min_season will increase sales by 0.0006994
+
+Ratings
+- One unit increase in ratingTV-14 leads to a decrease in sales by 0.2484371
+- One unit increase in ratingTV-G leads to a decrease in sales by 0.2017103
+- One unit increase in ratingTV-MA leads to a increase in sales by 0.0514162
+- One unit increase in ratingTV-PG leads to a decrease in sales by 0.0865257
+- One unit increase in ratingTV-Y leads to a decrease in sales by 0.2595788
+- One unit increase in ratingTV-Y7 leads to a decrease in sales by 0.5532761
+- One unit increase in ratingTV-Y7-FV leads to a increase in sales by 1.0794285
+
+Country
+- One unit increase in countryArgentina leads to a decrease in sales by 0.5652755
+- One unit increase in countryAustralia leads to a decrease in sales by 1.0935898
+- One unit increase in countryBelgium leads to a decrease in sales by 0.6486392
+- One unit increase in countryBrazil leads to a decrease in sales by 0.6559955
+- One unit increase in countryCanada leads to a decrease in sales by 0.6366348
+- One unit increase in countryChina leads to a decrease in sales by 1.4990808
+- One unit increase in countryColombia leads to a decrease in sales by 2.1540295
+- One unit increase in countryDenmark leads to a increase in sales by 0.4839906
+- One unit increase in countryFinland leads to a decrease in sales by 2.4408737
+- One unit increase in countryFrance leads to a increase in sales by 0.4741722
+- One unit increase in countryGermany leads to a increase in sales by 0.530801
+- One unit increase in countryIndia leads to a decrease in sales by 0.1617089
+- One unit increase in countryIreland leads to a decrease in sales by 0.7294564
+- One unit increase in countryIsrael leads to a decrease in sales by 0.147756
+- One unit increase in countryItaly leads to a decrease in sales by 0.056718
+- One unit increase in countryJapan leads to a decrease in sales by 0.0142749
+- One unit increase in countryLebanon leads to a decrease in sales by 0.8891609
+- One unit increase in countryMalaysia leads to a decrease in sales by 0.2137256
+- One unit increase in countryMexico leads to a decrease in sales by 0.6511711
+- One unit increase in countryNetherlands leads to a decrease in sales by 1.7962104
+- One unit increase in countryNorway leads to a decrease in sales by 0.0868322
+- One unit increase in countryPoland leads to a increase in sales by 1.2450583
+- One unit increase in countryRussia leads to a increase in sales by 1.1784119
+- One unit increase in countrySingapore leads to a decrease in sales by 0.611974
+- One unit increase in countrySouth Africa leads to a decrease in sales by 0.0741508
+- One unit increase in countrySouth Korea leads to a increase in sales by 0.1383327
+- One unit increase in countrySpain leads to a decrease in sales by 1.4167888
+- One unit increase in countrySweden leads to a decrease in sales by 1.8650753
+- One unit increase in countryTaiwan leads to a decrease in sales by 0.2973155
+- One unit increase in countryThailand leads to a decrease in sales by 0.6986747
+- One unit increase in countryTurkey leads to a decrease in sales by 0.1748323
+- One unit increase in countryUnited Kingdom leads to a decrease in sales by 0.2670385
+- One unit increase in countryUnited States leads to a decrease in sales by 0.1993425
+
+b. p-values: The p-values show that
+- __time_since_release__ is significant since p-values were less than the thresholds of 0, 0.001, 0.01, 0.05, and 0.1.
+- __countryChina__ and __countrySpain__ are significant if we were use a threshold were p-values are less than 0.1.
+- The rest of the variables are not significant.
+
+c. R-squared: The adjusted R-squared is __0.1789__, this means that only around 17.89% of the variability in sales is explained by the independent variables. This means that most of the variability in sales is unexplained by the model and there may be additional variables that explain the variability in sales. In addition, this may mean that country and rating did not help in further explaining the variability in sales, as determined by the p values.
+
+
+3. Run two different regression models for movies only, to examine the relationship between sales and other variables.
+The dependent variable is sales.
+Model 1: The independent variables are time_since_release, title_length, duration_min_season.
+Model 2: In addition to Model 1 variables, include country and rating in your regression.
+HINT: Remember these are factor variables? 
+Report and interpret the regression results (coefficients, p-values, R-squared) within your .Rmd/.html file. 
+
+__Model 1__
+
+```{r}
+movies_model1 <- lm(sales ~ time_since_release + title_length + duration_min_season, data = movies)
+
+# Summary of Model 1
+summary(movies_model1)
+```
+
+Interpretation:
+
+a. coefficients: 
+- The intercept is 17.641127.
+- One unit increase in time_since_release will decrease sales by 0.095526.
+- One unit increase intitle_length will decrease sales by 0.009509.
+- One unit increase duration_min_season will increase sales by 0.497798.
+
+b. p-values: The p-values show that only __time_since_release__ and __duration_min_season__ are significant, since the p-values of these variables were less than the the p-value is less thanthe thresholds of 0, 0.001, 0.01, 0.05, and 0.1.
+
+c. R-squared: The adjusted R-squared is __0.991__, this means that only around 99.10% of the variability in sales is explained by the independent variables. This means that only a little variability in sales is unexplained by the model.
+
+__Model 2__
+
+Regression:
+
+```{r}
+movies_model2 <- lm(sales ~ time_since_release + title_length + duration_min_season + rating + country, data = movies)
+
+# Summary of Model 2
+summary(movies_model2)
+```
+
+Interpretation
+
+a. coefficients: 
+- The intercept is 21.269423
+- One unit increase in time_since_release leads to a decrease in sales by 0.096582
+- One unit increase in title_length leads to a decrease in sales by 0.013723
+- One unit increase in duration_min_season leads to a increase in sales by 0.50026
+
+Ratings
+- One unit increase in ratingNR leads to a decrease in sales by 2.860948
+- One unit increase in ratingPG leads to a decrease in sales by 3.656433
+- One unit increase in ratingPG-13 leads to a decrease in sales by 3.310065
+- One unit increase in ratingR leads to a decrease in sales by 3.54899
+- One unit increase in ratingTV-14 leads to a decrease in sales by 3.234192
+- One unit increase in ratingTV-G leads to a decrease in sales by 3.041819
+- One unit increase in ratingTV-MA leads to a decrease in sales by 3.068279
+- One unit increase in ratingTV-PG leads to a decrease in sales by 3.084497
+- One unit increase in ratingTV-Y leads to a decrease in sales by 3.127097
+- One unit increase in ratingTV-Y7 leads to a decrease in sales by 3.363143
+- One unit increase in ratingTV-Y7-FV leads to a decrease in sales by 3.704739
+
+Country
+- One unit increase in countryArgentina leads to a decrease in sales by 0.036944
+- One unit increase in countryAustralia leads to a decrease in sales by 0.031592
+- One unit increase in countryAustria leads to a decrease in sales by 0.48089
+- One unit increase in countryBelgium leads to a decrease in sales by 3.92193
+- One unit increase in countryBrazil leads to a decrease in sales by 0.379702
+- One unit increase in countryBulgaria leads to a decrease in sales by 0.790722
+- One unit increase in countryCambodia leads to a decrease in sales by 1.433127
+- One unit increase in countryCanada leads to a decrease in sales by 0.349329
+- One unit increase in countryChile leads to a increase in sales by 0.404646
+- One unit increase in countryChina leads to a decrease in sales by 1.529484
+- One unit increase in countryColombia leads to a decrease in sales by 1.931321
+- There is no coefficient identified for countryDenmark
+- One unit increase in countryEgypt leads to a decrease in sales by 0.213866
+- One unit increase in countryFinland leads to a decrease in sales by 3.179871
+- One unit increase in countryFrance leads to a decrease in sales by 0.462372
+- One unit increase in countryGermany leads to a decrease in sales by 0.794812
+- One unit increase in countryGhana leads to a decrease in sales by 1.836005
+- One unit increase in countryGreece leads to a increase in sales by 0.969841
+- One unit increase in countryHong Kong leads to a decrease in sales by 0.260197
+- One unit increase in countryIndia leads to a decrease in sales by 0.761111
+- One unit increase in countryIndonesia leads to a decrease in sales by 1.148243
+- One unit increase in countryIreland leads to a decrease in sales by 0.916516
+- One unit increase in countryIsrael leads to a decrease in sales by 1.83747
+- One unit increase in countryItaly leads to a decrease in sales by 0.590844
+- One unit increase in countryJapan leads to a decrease in sales by 0.677441
+- One unit increase in countryKuwait leads to a decrease in sales by 2.054212
+- One unit increase in countryLebanon leads to a decrease in sales by 0.149511
+- One unit increase in countryMalaysia leads to a decrease in sales by 1.607421
+- One unit increase in countryMexico leads to a decrease in sales by 0.759188
+- One unit increase in countryNamibia leads to a increase in sales by 0.43529
+- One unit increase in countryNetherlands leads to a decrease in sales by 0.859335
+- One unit increase in countryNew Zealand leads to a decrease in sales by 2.045396
+- One unit increase in countryNigeria leads to a decrease in sales by 1.126068
+- One unit increase in countryNorway leads to a decrease in sales by 0.5072
+- One unit increase in countryPakistan leads to a increase in sales by 0.17919
+- One unit increase in countryPhilippines leads to a decrease in sales by 0.762897
+- One unit increase in countrySaudi Arabia leads to a decrease in sales by 1.387413
+- One unit increase in countrySerbia leads to a increase in sales by 0.555125
+- One unit increase in countrySingapore leads to a decrease in sales by 1.251333
+- One unit increase in countrySlovenia leads to a decrease in sales by 0.119018
+- One unit increase in countrySouth Africa leads to a decrease in sales by 0.74571
+- One unit increase in countrySouth Korea leads to a decrease in sales by 0.64896
+- One unit increase in countrySpain leads to a increase in sales by 0.245309
+- One unit increase in countrySweden leads to a decrease in sales by 2.162021
+- One unit increase in countryTaiwan leads to a decrease in sales by 1.88112
+- One unit increase in countryThailand leads to a decrease in sales by 2.017988
+- One unit increase in countryTurkey leads to a decrease in sales by 1.453623
+- One unit increase in countryUnited Kingdom leads to a decrease in sales by 0.412159
+- One unit increase in countryUnited States leads to a decrease in sales by 0.40771
+- One unit increase in countryUruguay leads to a decrease in sales by 0.709834
+
+
+
+b. p-values: The p-values show that 
+- only __time_since_release__ and __duration_min_season__ are significant, since the p-values of these variables were less than the the p-value is less than the thresholds of 0, 0.001, 0.01, 0.05, and 0.1.
+- __title_length__ is significant when compared to the p-value thresholds of 0.05 and 0.01
+- For ratings, ratingNR is significant if the p-value threshold used is 0.01. In addition,  ratingNR, ratingPG, ratingPG-13, ratingR, ratingTV-14, ratingTV-G, ratingTV-MA, ratingTV-PG, ratingTV-Y, ratingTV-Y7 are significant under a p-value threshold of 0.05 and 0.1.
+- __countryBelgium__ is significant if we were use a threshold were p-values are less than 0.1.
+- The rest of the variables are not significant.
+
+
+c. R-squared: The adjusted R-squared is __0.1935__, this means that only around 19.35% of the variability in sales is explained by the independent variables. This means that most of the variability in sales is unexplained by the model and there may be additional variables that explain the variability in sales.
+
+
+4. What are the differences you observe in your results for the regression outputs for tv_shows and movies? Which variables are significant?
+
+__Model 1__ 
+
+a. coefficients:
+- The intercept for TV (10.473339) is less than that for movies (17.641127)
+- For time_since_release, one unit increase will mean an increase sales by 0.110952 for TV shows while it will mean  decrease sales by -0.095526 for movies
+- For title_length, one unit increase will mean increase sales by 0.003825 for TV shows while it will mean decrease sales by -0.009509 for movies.
+For duration_min_season, one unit increase will mean  decrease sales by -0.04126 for TV shows while it will mean increase sales by 0.497798 for movies.
+
+b. p-values: Only time_since_release is significant for TV shows. O
+model1_movies <- lm(sales ~ time_since_release + title_length + duration_min_season, data = movies)
+
+
+
+c, R-squared: The adjusted R-squared for TV shows (0.1935) is less than the R-squared for movies (0.991), which means that Model 1 can explain more of the variability for movies than in TV shows.
+
+
+__Model 2__ 
+
+a. coefficients:
+- The intercept for TV (10.8845675) is less than that for movies (21.269423)
+- For time_since_release, one unit increase will mean an increase sales by 0.1126505 for TV shows while it will mean  decrease sales by -0.096582 for movies
+- For title_length, one unit increase will mean increase sales by 0.003825 for TV shows while it will mean decrease sales by -0.013723 for movies.
+For duration_min_season, one unit increase will mean increase sales by -0.0006994 for TV shows while it will mean increase sales by 0.50026 for movies.
+
+b. p-values:
+-  Only me_since_release is significant for TV shows. On the other hand, time_since_release and duration_min_season are significant.
+- title_length is not significant for TV shows. On the other hand, title_length is significant for movies when compared to the p-value thresholds of 0.05 and 0.01
+- ratings are not significant for TV shows. On the other hand, for movies, ratingNR is significant if the p-value threshold used is 0.01. In addition, for movies, In addition,  ratingNR, ratingPG, ratingPG-13, ratingR, ratingTV-14, ratingTV-G, ratingTV-MA, ratingTV-PG, ratingTV-Y, ratingTV-Y7 are significant under a p-value threshold of 0.05 and 0.1. 
+- for country, __countryChina__ and __countrySpain__  were significant for tv shows if p-values are less than 0.1 in threshold. One the other hand, for movies, __countryBelgium__ is significant if we were use a threshold were p-values are less than 0.1.
+
+c. R-squared: The adjusted R-squared for TV shows (0.1789) is less than the R-squared for movies (0.1935), which means that Model 2 can explain more of the variability for movies than in TV shows.
