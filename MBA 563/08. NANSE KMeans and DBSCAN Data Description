@@ -1,0 +1,25 @@
+RDS file title:	"city.rds"
+
+Summary:	These data are aggregated by city and are the overall average for stores in that city (i.e., the average of all stores for the year for that city). Thus, each example/row represents data from one city for all of 2015. 
+
+city: City names (257 unique cities, though two cities in different Provinces have the same name)
+province: Canadian province abbreviations, including the following: "BC"      "AB"      "ON"      "QC"      "SK"      "NS"      "MB"      "NB"      "PE"      "UNKNOWN"
+region: Region of Canada, including the following: "WEST"     "ONTARIO"  "QUEBEC"   "ATLANTIC"
+size: The average number of unique products available for sale per store in that city.
+promo_units_per: The average proportion of units out of 1.0 that were sold at a promotional price versus a normal price per store in that city.
+high_med_gp: The average percentage of weeks that the gross profit for stores in the city was above the median of the other stores.
+velocityA_units_per: The average proportion of units out of 1.0 that were sold from "velocity A group" per store for that city. Velocity measures sales per point of distribution. Velocity A products are the highest selling group of products and the majority of a store's sales.
+velocityB_units_per: The average proportion of units out of 1.0 that were sold from "velocity B group" per store for that city. Velocity measures sales per point of distribution. Velocity B products are the second highest selling group of products.
+velocityC_units_per: The average proportion of units out of 1.0 that were sold from "velocity C group" per store for that city. Velocity measures sales per point of distribution. Velocity C products are the third highest selling group of products and may be rarer products and product line extensions.
+velocityD_units_per: The average proportion of units out of 1.0 that were sold from "velocity D group" per store for that city. Velocity measures sales per point of distribution. Velocity D products are the lowest selling group of products and are usually candidates for discontinuation.
+velocityNEW_units_per: The average proportion of units out of 1.0 that were sold from "velocity NEW group" per store for that city. Velocity measures sales per point of distribution. Velocity NEW products are the new products that have not been put into a velocity group yet. 
+energy_units_per: The average proportion of units out of 1.0 that were sold in the energy product category per store for that city. E.g., energy drinks, etc.
+regularBars_units_per: The average proportion of units out of 1.0 that were sold in the regularBars product category per store for that city. E.g., regular sized candy bars, M&Ms, etc.
+gum_units_per: The average proportion of units out of 1.0 that were sold in the gum product  category per store for that city. E.g., gum, mints, etc.
+bagpegCandy_units_per: The average proportion of units out of 1.0 that were sold in the bagpegCandy product category per store for that city. E.g., bags of candy, etc.
+isotonics_units_per: The average proportion of units out of 1.0 that were sold in the isotonics product category per store for that city. E.g., Gatorade, Powerade, etc.
+singleServePotato_units_per: The average proportion of units out of 1.0 that were sold in the singleServePotato product category per store for that city. E.g., smaller bags of potato chips and pretzels , etc.
+takeHomePotato_units_per: The average proportion of units out of 1.0 that were sold in the takeHomePotato product category per store for that city. E.g., larger bags of potato chips, pretzels, etc.
+kingBars_units_per: The average proportion of units out of 1.0 that were sold in the kingBars product category per store for that city. E.g., larger (king-sized) candy bars, etc.
+flatWater_units_per: The average proportion of units out of 1.0 that were sold in the flatWater product category per store for that city. E.g., non-sparkling water, etc.
+psd591Ml_units_per: The average proportion of units out of 1.0 that were sold in the psd591Ml product category per store for that city. E.g., 20 oz (591 milliliters) packaged soda, etc.
