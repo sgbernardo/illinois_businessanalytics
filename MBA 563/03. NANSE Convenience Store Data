@@ -1,0 +1,26 @@
+##Nanse Convenience Store Data
+
+The data contains sales data aggregated by store in 2015, each row representing the weekly average for one store in the same year.
+
+Elements:
+
+store: Store ID
+city: The city in which the store is located
+region: The region in which the store is located
+province: The province in which the store is located
+size: The average per week number of unique products available for sale from that store.
+revenue: The average weekly revenue from the store 
+units: The average weekly number of SKUs sold in the store 
+cost: The average weekly cost of the products sold in the store 
+gross_profit: The average weekly gross_profit made by the the store
+promo_units: The average weekly number of units sold on promotion
+energy_units: The average weekly number of units sold in the energy product category
+regularBars_units: The average weekly number of units sold in the regularBars product category
+gum_units: The average weekly number of units sold in the gum product product category
+bagpegCandy_units: The average weekly number of units sold in the bagpegCandy product category
+isotonics_units: The average weekly number of units sold in the isotonics product category
+singleServePotato_units: The average weekly number of units sold in the singleServePotato product category
+takeHomePotato_units: The average weekly number of units sold in the takeHomePotato product category
+kingBars_units: The average weekly number of units sold in the kingBars product category
+flatWater_units: The average weekly number of units sold in the flatWater product category
+psd591Ml_units: The average weekly number of units sold in the psd591Ml product category
