@@ -37,6 +37,10 @@ The box plot indicates that there were outliers, with some stores having signifi
 
 This project covers regression analysis of loan data, where we examined how factors such as loan amount, ltp, and income affect interest rates of approved loans. 
 
+**5. Predicting NANSE Store Traffic Through Generalized Linear Models (GLM)**
+
+On top of profit, as examined in the Exploratory Data Analysis of NANSE Sales Data (NANSE_EDA) project, NANSE is also wants to predict higher traffic in stores. Specifically, management wanted to predict which weeks and stores will sell above the median number of units. Generalized Linear Models (GLM) techniques was used to understand how different variables affect the number of units sold (high_med_units). From here, the model was further trained using predict function on the training data provided. We used the test data to find the confusion matrix.
+
 ### MBA 564A - Applying Data Analytics in Marketing
 **1. Data Wrangling using R: Application to Netflix Data**
 
