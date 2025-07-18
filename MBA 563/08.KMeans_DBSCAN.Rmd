@@ -1,0 +1,234 @@
+---
+title: "KMeans and DBSCAN Algorithims"
+date: "2023-12-11"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# K-MEANS
+
+## Install packages and read in data
+```{r}
+#install.packages('tidyverse') #only install once
+library(tidyverse)
+#install.packages('factoextra') #only install once
+library(factoextra)
+```
+
+## Reading the data
+
+```{r}
+# read in data (change to your path)
+clustering_input1 <- read_rds( "city.rds")
+```
+
+## Removing city, region and province from the data 
+
+```{r}
+clustering_input2 <- clustering_input1 %>% 
+        select(-city, -region, -province )
+
+str(clustering_input2)
+summary(clustering_input2)
+```
+
+## Z-score standardization
+
+```{r}
+clustering_input2 <- as.data.frame(scale(clustering_input2))
+```
+
+## Finding a suitable k using two different methods
+
+```{r}
+# Within-cluster sum of square method
+set.seed(42)
+factoextra::fviz_nbclust(clustering_input2, kmeans, method = "wss")
+```
+
+```{r}
+# Silhouette approach
+set.seed(42)
+factoextra::fviz_nbclust(clustering_input2, kmeans, method = "silhouette")
+```
+
+## Running the model
+```{r}
+set.seed(42)
+clusters <- kmeans(clustering_input2, centers=3, iter.max=10, nstart=10)
+```
+
+## Checking the size of the k clusters
+```{r}
+clusters$size
+```
+
+## Visualizing the clustering
+
+(Uses principal components to collapse the dimensions of the data down to two dimensions)
+
+```{r}
+fviz_cluster(clusters, clustering_input2,  geom = "point", show.clust.cent = TRUE, palette = "jco", ggtheme = theme_classic())
+```
+
+__Number of clustersfor K-Means Algorithm Based on Data__
+
+After a thorough analysis of the data using both the "wss" and "silhouette" methods for determining the optimal number of clusters in the K-means algorithm, we have decided to utilize 3 clusters. The "wss" method suggests that any score from 3 to 7 could be suitable. This suggests that 3 clusters provide a good balance between capturing the variance in the data and avoiding unnecessary complexity. Moreover, the silhouette method, which measures the quality of clustering by assessing cohesion within clusters and separation between clusters, also supports the choice of 3 clusters. The highest silhouette score was obtained when setting k closer to 2, but the third-highest score was achieved with k=3. When we visually inspected the clusters in a two-dimensional plot, the decision to use 3 clusters was further reinforced. Cluster 3 exhibited almost non-overlapping classes and effectively separated data points in space. Additionally, examining the size of clusters, we found that they were reasonably balanced, with 60, 93, and 104 data points within clusters 1, 2, and 3, respectively. This balanced distribution suggests that 3 clusters offer a representative segmentation of the data without skewing towards any specific subset. In summary, the combination of the wss and silhouette methods, visual inspection, and along with number of data pints within clusters led us to confidently choose 3 clusters for our K-means algorithm.
+
+# KMeans with 6 Centers
+
+## Running the model with 6 centers
+
+```{r}
+set.seed(42)
+clusters <- kmeans(clustering_input2, centers=6, iter.max=10, nstart=10)
+```
+
+## Checking the size of the k clusters
+
+```{r}
+clusters$size
+```
+
+## Visualizing the clustering
+(Uses principal components to collapse the dimensions of the data down to two dimensions)
+
+```{r}
+fviz_cluster(clusters, clustering_input2,  geom = "point", show.clust.cent = TRUE, palette = "jco", ggtheme = theme_classic())
+```
+
+## Matrix indicating the mean values for each feature and cluster combination
+
+```{r}
+clusters$centers
+```
+
+## Naming the clusters
+
+```{r}
+clustering_input1$cluster <- clusters$cluster
+
+clustering_input1 <- clustering_input1 %>% 
+        mutate(cluster_labels = case_when(
+                cluster==1 ~ 'Small Stores, Low Profits, Love Promos', 
+                cluster==2 ~ 'Largest Stores, Most Profitable, Love Flat Water',
+                cluster==3 ~ 'Small Stores, Low Profits, Love Flat Water',
+                cluster==4 ~ 'Smallest Stores, Lowest Profit, That Like Energy Drinks, Isotonics, King Bars',
+                cluster==5 ~ 'Large Stores, Profitable, Lots of Energy Drinks, Big Chip Bags',
+                cluster==6 ~ 'Mid Size, Bags of Candy'))
+
+slice_sample(clustering_input1, n=50)
+
+```
+
+__Explanation of each name__
+
+The clusters have been assigned labels based on certain characteristics. Let's break down the cluster names:
+
+* __Small Stores, Low Profits, Love Promos (Cluster 1):__
+  + Features indicative of small value in size.
+  + Low profitability suggested by the negative value in high_med_gp.
+  + Affinity for promotions, as implied by high positive values in promo_units_per.
+
+* __Largest Stores, Most Profitable, Love Flat Water (Cluster 2):__
+  + Largest stores indicated by the highest positive value in size.
+  + Most profitable, as suggested by the highest positive value in high_med_gp.
+  + Affection for flat water, as indicated by the high positive value in flatWater_units_per.
+  
+* __Small Stores, Low Profits, Love Flat Water (Cluster 3):__
+  + Similar to Cluster 1, these are small stores with low profitability.
+  + Love for flat water, as indicated by the high positive value in flatWater_units_per.
+
+* __Smallest Stores, Lowest Profit, That Like Energy Drinks, Isotonics, King Bars (Cluster 4):__
+  + Smallest stores indicated by the lowest value in size.
+  + Lowest profitability, as suggested by the largest negative value in high_med_gp.
+  + Preference for energy drinks, isotonics, and king bars, indicated by high positive values in relevant features.
+
+* __Large Stores, Profitable, Lots of Energy Drinks, Big Chip Bags (Cluster 5):__
+  + Large stores, indicated by the high positive value in size.
+  + Profitable, as suggested by the high positive value in high_med_gp.
+  + Specializing in energy drinks and big chip bags, as indicated by high positive values in energy_units_per and takeHomePotato_units_per.
+
+* __Mid Size, Bags of Candy (Cluster 6): __
+  + Mid-size stores, suggested by the moderate value in size.
+  + Specializing in bags of candy, as implied by high positive values in bagpegCandy_units_per.
+
+__Largest and most profitable cluster cities__
+Cluster 2
+
+__Recommendation__ 
+NANSE should focus on cluster 4. These are the smallest stores, which have the lowest profit margin. To increase the profit margin, NANSE should consider having a promotion that if a customer buys a certain number of specific items, they get a percentage discount on another item (ensuring the discount is more than made up for by the profit on the other items). To stimulate increased purchases of higher-profit items, it is recommended to implement targeted promotions. For instance, offering customers a percentage discount on energy drinks when they buy a specified quantity of higher-profit items could incentivize them to diversify their purchases. Importantly, the discount on energy drinks should be strategically set to ensure that the increased sales of higher-margin items compensate for the discount, thereby fostering both customer engagement and improved profitability for these small stores.
+
+## Parry Sound and Trenton
+
+```{r}
+# PARRY SOUND
+parry_sound <- clustering_input1 %>%
+    filter(city == "PARRY SOUND")
+print(parry_sound$cluster_labels)
+
+# TRENTON
+parry_sound <- clustering_input1 %>%
+    filter(city == "TRENTON")
+print(parry_sound$cluster_labels)
+```
+
+__Findings__
+
+* __Parry Sound:__ This city has the largest stores with the highest profit margin. Customers love buying flat water in this city.
+* __Trenton:__ This city has the smallest stores with the lowest profit margin. Customers love buying energy drinks, isotonics, and King Bars in this city.
+
+
+# DBSCAN
+
+## Installing dbscan package and reading data 
+
+```{r}
+#install.packages('dbscan') #only install once
+library(dbscan)
+
+# read in data (change to your path)
+clustering_input1 <- read_rds("city.rds")
+
+clustering_input2 <- clustering_input1 %>% 
+        select(-city, -region, -province )
+```
+
+## Standardizing the data using z-score standardization. 
+
+```{r}
+clustering_input2 <- as.data.frame(scale(clustering_input2))
+```
+
+## Running the DBSCAN algorithm
+
+```{r}
+set.seed(42)
+clusters_db <- dbscan::dbscan(clustering_input2, eps = 5, minPts = 4)
+```
+
+## Printing the size of the clusters.
+
+```{r}
+table(clusters_db$cluster)
+```
+
+## Visualizing the clusters
+
+```{r}
+fviz_cluster(clusters_db, clustering_input2,  geom = "point", show.clust.cent = FALSE, palette = "jco", ggtheme = theme_classic())
+```
+
+There is 1 cluster, and 253 cities are in this cluster.
+
+__Why KMeans works better for this dataset__
+* K-means proves to be a more helpful clustering method for this dataset compared to DBSCAN due to its capacity to clearly break down the dataset into six distinct clusters. The output of K-means provides valuable insights into the grouping of stores, allowing for a comprehensive understanding of different segments within the data. This breakdown into clusters facilitates a more granular analysis, enabling NANSE to identify specific stores that share similar characteristics. Unlike DBSCAN, which may not provide as explicit cluster assignments, K-means produces well-defined clusters that can guide targeted strategies. Moreover, it's worth noting that DBSCAN is particularly effective on dense datasets, and since our dataset is not dense, it may not be as helpful in this context. 
+* Therefore, we recommend that NANSE leverages the K-means method for its clustering analysis, as it not only groups stores effectively but also facilitates a more nuanced approach to store management and optimization.
+
+__How each method deals with outliers__
+K-means did not remove any outliers but rather created clusters that incorporated the outliers. DBSCAN actually did remove 4 outlier data points.
+
+The handling of outliers differs significantly between K-means and DBSCAN clustering methods. In the case of K-means, the algorithm typically does not explicitly remove outliers but instead incorporates them into the clusters it forms. K-means assigns each data point to the nearest cluster center, which means outliers can influence the centroid positions and potentially impact the overall structure of the clusters.
+
+On the other hand, DBSCAN takes a different approach. DBSCAN identifies outliers as noise points, treating them as data points that do not belong to any cluster. This method effectively removes outliers by categorizing them as noise during the clustering process.
