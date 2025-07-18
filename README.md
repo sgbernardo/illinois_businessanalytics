@@ -21,11 +21,17 @@ This project utilises grocery transactions to perform basic data preparation and
 ### MBA 563 - Data Toolkit
 **1. ETL and EDA with R (ETL_EDA_UsingR)**
 
-This project explores the ETL and EDA functionalities of R using grocery data in MBA 561 to compare the capabilities of R with PowerBI and Alteryx, both used for data analytics and visualisation.
+This project exammines the ETL and EDA functionalities of R using grocery data in MBA 561 to compare the capabilities of R with PowerBI and Alteryx, both used for data analytics and visualisation.
 
 **2. Regression Analysis with R (02.Regression_with_R)**
 
 This project examines bike rental data, utilising multiple regression techniques to investigate the seasonal effect on bike rental usage.
+
+**3. Exploratory Data Analysis of NANSE Sales Data (NANSE_EDA)**
+
+NANSE owns over 700 small-form convenience stores in Canada. This project made use of average sales data from each store location in the country, employing techniques such as correlation, boxplots, and correlation matrices. I found a positive correlation between revenue and store size. In other words, the larger the store, the higher the store's revenues for the company. This is likely due to the availability of products that can be bought in bigger stores. 
+
+The box plot indicates that there were outliers, with some stores having significantly higher revenue than the average store. In terms of gross profit, stores in Ontario (ON) have the highest aggregate gross profit in Canada. The product correlation matrix shows that gum and psd951M product categories sell together the least while candy and take home potato products sell together the most.
 
 ### MBA 564A - Applying Data Analytics in Marketing
 **1. Data Wrangling using R: Application to Netflix Data**
