@@ -1,0 +1,142 @@
+This contains a full data set of loan activity from public HMDA data.
+
+Source: https://ffiec.cfpb.gov/documentation/publications/loan-level-datasets/lar-data-fields
+
+Elements:
+activity_year: The calendar year the data submission covers
+
+lei: A financial institution’s Legal Entity Identifier
+
+derived_msa-md: The 5 digit derived MSA (metropolitan statistical area) or MD (metropolitan division) code
+
+state_code: Two-letter state code
+
+county_code: State-county FIPS code
+
+census_tract: 11 digit census tract number
+
+derived_loan_product_type: Derived loan product type from Loan Type and Lien Status fields for easier querying
+
+derived_dwelling_category: Derived dwelling type from Construction Method and Total Units fields for easier querying
+
+conforming_loan_limit: Indicates whether the reported loan amount exceeds the GSE conforming loan limit
+
+derived_ethnicity: Single aggregated ethnicity categorization derived from borrower/co-borrower ethnicity fields
+
+derived_race: Single aggregated race categorization derived from borrower/co-borrower race fields
+
+derived_sex: Single aggregated sex categorization derived from borrower/co-borrower sex fields
+
+action_taken: The action taken on the covered loan or application
+
+purchaser_type: Type of entity purchasing a covered loan from the institution
+
+preapproval: Whether the loan/application involved a request for preapproval under a preapproval program
+
+loan_type: The type of covered loan or application
+
+loan_purpose: The purpose of covered loan or application
+
+lien_status: Lien status of the property securing/proposed to secure the covered loan
+
+reverse_mortgage: Whether the covered loan/application is for a reverse mortgage
+
+open-end_line_of_credit: Whether the covered loan/application is for an open-end line of credit
+
+business_or_commercial_purpose: Whether the loan/application is primarily for a business or commercial purpose
+
+loan_amount: The amount of the covered loan or the amount applied for
+
+combined_loan_to_value_ratio: Ratio of total debt secured by the property to property value relied on for the credit decision
+
+interest_rate: The interest rate for the covered loan/application
+
+rate_spread: Difference between the loan’s APR and the average prime offer rate for a comparable transaction
+
+hoepa_status: Whether the covered loan is a high-cost mortgage
+
+total_loan_costs: The amount, in dollars, of total loan costs
+
+total_points_and_fees: Total points and fees, in dollars, charged in connection with the covered loan
+
+origination_charges: Total of all borrower-paid itemized amounts at or before closing
+
+discount_points: Points paid, in dollars, to the creditor to reduce the interest rate
+
+lender_credits: Amount, in dollars, of lender credits
+
+loan_term: Number of months after which the legal obligation will mature or terminate
+
+prepayment_penalty_term: The term, in months, of any prepayment penalty
+
+intro_rate_period: Number of months until the first date the interest rate may change after closing or account opening
+
+negative_amortization: Whether contractual terms include a provision that would cause the loan to be a negative amortization loan
+
+interest_only_payment: Whether contractual terms include interest-only payments
+
+balloon_payment: Whether contractual terms include a balloon payment
+
+other_nonamortizing_features: Whether contractual terms include terms allowing for non-fully amortizing payments
+
+property_value: Value of the property securing the loan/application as relied on in making the credit decision
+
+construction_method: Construction method for the dwelling
+
+occupancy_type: Occupancy type for the dwelling
+
+manufactured_home_secured_property_type: Whether the loan/application is secured by a manufactured home and land, or not land
+
+manufactured_home_land_property_interest: The applicant’s/borrower’s interest in the land where a manufactured home is/will be located
+
+total_units: Number of dwelling units related to the property securing/proposed to secure the loan
+
+ageapplicant: The age of the applicant
+
+multifamily_affordable_units: Percentage (rounded) of the value reported for total affordable units in a multifamily property
+
+income: The gross annual income, in thousands, relied on in making the credit decision
+
+debt_to_income_ratio: Ratio of applicant’s total monthly debt to monthly income relied on in the credit decision
+
+applicant_credit_score_type: Name and version of credit scoring model used to generate applicant credit score(s)
+
+co-applicant_credit_score_type: Name and version of credit scoring model used to generate co-applicant credit score(s)
+
+applicant_ethnicity-1 to applicant_ethnicity-5: Ethnicity of the applicant/borrower (up to five responses possible)
+
+co-applicant_ethnicity-1 to co-applicant_ethnicity-5: Ethnicity of first co-applicant/co-borrower (up to five responses possible)
+
+applicant_ethnicity_observed: Whether ethnicity of applicant/borrower was collected by visual observation or surname
+
+co-applicant_ethnicity_observed: Whether ethnicity of co-applicant/co-borrower was collected by visual observation or surname
+
+applicant_race-1 to applicant_race-5: Race of the applicant/borrower (up to five responses possible)
+
+co-applicant_race-1 to co-applicant_race-5: Race of first co-applicant/co-borrower (up to five responses possible)
+
+applicant_race_observed: Whether race of applicant/borrower was collected by visual observation or surname
+
+co-applicant_race_observed: Whether race of co-applicant/co-borrower was collected by visual observation or surname
+
+applicant_sex: Sex of applicant/borrower
+
+co-applicant_sex: Sex of first co-applicant/co-borrower
+
+applicant_sex_observed: Whether sex of applicant/borrower was collected by visual observation or surname
+
+co-applicant_sex_observed: Whether sex of co-applicant/co-borrower was collected by visual observation or surname
+
+applicant_age_above_62: Whether the applicant or borrower age is 62 or above
+
+co-applicant_age: Age, in years, of the first co-applicant/co-borrower
+
+co-applicant_age_above_62: Whether the co-applicant or co-borrower age is 62 or above
+
+submission_of_application: Whether the applicant/borrower submitted application directly to the financial institution
+
+initially_payable_to_institution: Whether the loan obligation was/would have been initially payable to the institution
+
+aus-1 to aus-5: Automated underwriting system(s) (AUS) used in application evaluation (up to five responses possible)
+
+denial_reason-1 to denial_reason-4: Principal reasons for denial (up to four responses possible)
