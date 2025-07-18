@@ -1,0 +1,138 @@
+---
+title: "Regression Analyis of HMDA Loan Data"
+output:
+  pdf_document: default
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading the Packages for use
+```{r}
+library(conflicted)
+library(tidyverse)
+library(magrittr)
+library(lubridate)
+library(corrplot)
+library(dplyr)
+```
+## Reading the data
+
+```{r}
+# Read data
+df <- readRDS('hmdaInterestRate.rds')
+
+# Display the structure of data
+str(df)
+```
+
+## Data Preparation
+
+```{r}
+# Replace the values in the following columns with the same value divided by 1,000: loan_amount, property_value, and income. 
+df <- df %>%
+  mutate(
+    loan_amount = loan_amount / 1000,
+    property_value = property_value / 1000,
+    income = income / 1000
+  )
+
+
+# Create a new column, ltp, that is equal to the values in the loan_amount column divided by the values in the property_value column.
+df <- df %>%
+  mutate(ltp = loan_amount / property_value)
+
+
+# Filter the data to keep observations for which income is less than 300 (i.e., $300,000).
+df <- df %>%
+  dplyr::filter(income < 300)
+
+
+# Display a summary of all columns
+summary(df)
+```
+
+### Creating a correlation matrix and correlation plot
+
+```{r}
+# Create correlation matrix 
+ctrd = cor(df[,c('interest_rate', 'ltp', 'income', 'applicant_age', 'property_value', 'loan_amount')])
+
+# Create the correlation plot
+corrplot(ctrd
+         , method = 'color' 
+         , order = 'hclust' 
+         , addCoef.col = 'black'
+         , number.cex = .6 
+         )
+```
+
+
+The variable loan_amount exhibits the most pronounced negative correlation with interest_rate, standing at -0.33. This negative correlation implies that, as the loan amount increases, there is a tendency for the interest rate to decrease. This phenomenon can be attributed to factors such as risk assessment by lenders and market dynamics, where larger loans may be subject to lower interest rates to attract borrowers or manage risk.
+
+
+### Regression of interest_rate (dependent variable) on ltp (independent variable)
+
+```{r}
+# Fit the linear regression model
+model <- lm(interest_rate ~ ltp, data = df)
+
+# Display a summary of the fitted model
+summary(model)
+```
+
+
+The coefficient estimate for ltp is -1.05188. This implies that, on average, for every one-unit increase in the loan-to-property (ltp), the interest rate is expected to decrease by 1.05188 units.This negative relationship aligns with common lending practices and makes sense. A higher ltp is often associated with a lower level of risk for the lender, as it suggests the borrower has a larger equity stake in the property. Lower risk may lead to lenders offering lower interest rates to borrowers with higher equity.
+
+
+### Regression of interest_rate (dependent variable) on loan_amount (independent variable)
+
+```{r}
+# Fit the linear regression model 
+multi_model <- lm(interest_rate ~ ltp + loan_amount, data = df)
+
+# Display a summary of the fitted model
+summary(multi_model)
+```
+
+
+* __Change in Adjusted R-squared:__
+  + The adjusted R-squared for the multiple predictor model (0.152) is higher than that of the single predictor model (0.1015).
+  + The increase in adjusted R-squared suggests that the additional predictor (loan_amount) contributes to explaining more variability in interest_rate. In other words, the model with both predictors provides a better fit to the data compared to the model with just ltp.
+
+
+* __Change in Coefficient Estimate on ltp:__
+  + The coefficient estimate on ltp decreased from -1.05188 in the single predictor model to -0.7373702 in the multiple predictor model.
+  + This change suggests that when loan_amount is included in the model, the effect of ltp on interest_rate is attenuated. In other words, the relationship between ltp and interest_rate is influenced by the presence of the additional predictor.
+
+### Regression of interest_rate (dependent variable) on interest_rate on ltp, loan_amount, and aus_1 (independent variables)
+
+
+```{r}
+# Fit the linear regression model
+multi_model2 <- lm(interest_rate ~ ltp + loan_amount + aus_1, data = df)
+
+# Display a summary of the fitted model
+summary(multi_model2)
+```
+
+* __Change in Adjusted R-squared:__
+  + The adjusted R-squared for the multiple predictor model (0.2667) is higher than that of the previous model (0.152).
+  + The increase in adjusted R-squared suggests that the addition of the aus_1 variable contributes to explaining more variability in interest_rate. Including more predictors has improved the overall model fit.
+
+* __For the ltp Variable:__
+  + Coefficient Estimate: The coefficient estimate for ltp changed from -0.7373702 to 0.025007. The change in the coefficient estimate suggests a reversal in the relationship between ltp and interest_rate. Previously, ltp had a negative coefficient, indicating a negative relationship. In the current model, the positive coefficient suggests a positive relationship.
+  + P-value: The p-value for ltp increased substantially from <2e-16 (is statistically significant) to 0.607 (is not statistically significant). The increase in the p-value indicates that the relationship is no longer statistically significant.
+
+* __For the loan_amount Variable:__
+  + Coefficient Estimate: The coefficient estimate for loan_amount increased from -0.0021367 to -0.001714. The change in the coefficient estimate suggests a slight modification in the impact of loan_amount on interest_rate.
+  + P-value: The p-value for loan_amount remains the same with (< 2e-16), indicating that the relationship remains statistically significant.
+
+* __For the aus_1 Variable:__
+  + Significant Levels: The aus_1 variable has multiple levels, and each level is associated with a different coefficient estimate.
+  + The levels of the aus_1 variable provide information about the impact of different aus on interest_rate. The level "aus_1Not applicable" has a coefficient of 0.9051, indicating that loans with this aus tend to have highest interest rates compared to others. Also, the p-value is statistically significant (< 2e-16) for "aus_1Not applicable".
