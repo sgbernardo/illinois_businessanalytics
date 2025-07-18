@@ -1,0 +1,171 @@
+---
+title: "Predicting NANSE Store Traffic Through Generalized Linear Models (GLM)"
+  output:
+    pdf_document: default
+    html_document: default
+---
+
+
+## Creating the confusion matrix
+
+```{r}
+# RStudio Options
+options(scipen = 1000) #Prevent display in scientific notation
+# Run this reusable confusion matrix function (https://en.wikipedia.org/wiki/Confusion_matrix)
+my_confusion_matrix <- function(cf_table) {
+  true_positive <- cf_table[4]
+  true_negative <- cf_table[1]
+  false_positive <- cf_table[2]
+  false_negative <- cf_table[3]
+  accuracy <- (true_positive + true_negative) / (true_positive + true_negative + false_positive + false_negative)
+  sensitivity_recall <- true_positive / (true_positive + false_negative) 
+  specificity_selectivity <- true_negative / (true_negative + false_positive)
+  precision <- true_positive / (true_positive + false_positive) 
+  neg_pred_value <- true_negative/(true_negative + false_negative)
+  print(cf_table)
+  my_list <- list(sprintf("%1.0f = True Positive (TP), Hit", true_positive),
+                  sprintf("%1.0f = True Negative (TN), Rejection", true_negative),
+                  sprintf("%1.0f = False Positive (FP), Type 1 Error", false_positive),
+                  sprintf("%1.0f = False Negative (FN), Type 2 Error", false_negative),
+                  sprintf("%1.4f = Accuracy (TP+TN/(TP+TN+FP+FN))", accuracy), 
+                  sprintf("%1.4f = Sensitivity, Recall, Hit Rate, True Positive Rate (How many positives did the model get right? TP/(TP+FN))", sensitivity_recall),
+                  sprintf("%1.4f = Specificity, Selectivity, True Negative Rate (How many negatives did the model get right? TN/(TN+FP))", specificity_selectivity),
+                  sprintf("%1.4f = Precision, Positive Predictive Value (How good are the model's positive predictions? TP/(TP+FP))", precision),
+                  sprintf("%1.4f = Negative Predictive Value (How good are the model's negative predictions? TN/(TN+FN)", neg_pred_value)
+  )
+  return(my_list)
+}
+```
+
+## Installing and Loading Packages
+
+```{r}
+#install.packages('tidyverse')
+library(tidyverse)
+
+# Load data
+df <- read_rds("mod6HE_logit.rds")
+
+# Explore the data and discuss in PowerPoint
+summary(df)
+```
+
+## Preparing the data for the logistic regression algorithm
+
+```{r}
+# Not for the model (for use later)
+ColumnsNotUsed <- df %>% 
+  select(store, week, high_med_rev, high_med_gpm,high_med_gp)
+
+# For use in the model
+logit1 <- df %>% 
+  select(high_med_units,size, region, promo_units_per, 
+         altbev_units_per, confect_units_per, salty_units_per,
+         velocityA_units_per, velocityB_units_per, velocityC_units_per, velocityD_units_per, velocityNEW_units_per)
+```
+
+
+## Partitioning the data into testing and training datasets
+
+```{r}
+#install.packages('caret') (don't install twice)
+library(caret)
+set.seed(42) 
+partition <- caret::createDataPartition(y=logit1$high_med_units, p=.75, list=FALSE) #gives matrix of row numbers
+data_train <- logit1[partition, ] #keeps the rows indicated in `partition` and all columns from `logit1`
+data_test <- logit1[-partition, ] #keeps the rows not indicated in `partition` and all columns from `logit1`
+```
+
+## Training the multivariate model
+
+These are the instructions part of machine learning
+
+```{r}
+model_train <- glm(high_med_units ~ ., family=binomial, data=data_train)
+summary(model_train)
+```
+
+
+## Predicting the response variable on the test data using the training data
+
+```{r}
+predict_test <- predict(model_train, newdata=data_test, type='response')
+```
+
+
+## Forming table to look at the accuracy of the model
+
+```{r}
+table2 <- table(predict_test>.5, data_test$high_med_units) #prediction on left and truth on top
+my_confusion_matrix(table2)
+```
+
+
+Using the predictions above to help the business.  
+
+## Putting the data back together for future use
+
+```{r}
+# Put the prediction back into the test data
+data_test$prediction <- predict_test
+
+# Create a variable that shows if the prediction was correct 
+# (We have to do the classification--in `round(prediction)`--since logistic regression gives us a probability)
+data_test <- data_test %>% 
+  mutate(correct_prediction = if_else(round(prediction) == high_med_units, 'correct', 'WRONG!'))
+
+# Add back the original data
+temp1 <- ColumnsNotUsed[-partition, ]
+full_test <- bind_cols(temp1, data_test)
+
+# For viewing in class
+full_test <- full_test %>% 
+  select(store, week, high_med_units, prediction, correct_prediction, 
+         size, region, promo_units_per, salty_units_per)
+slice_sample(full_test, n=10)
+```
+
+##Summary of Findings
+
+__Feature/variable with the largest positive coefficient and statistically significant in the trained model summary__
+
+salty_units_per has the largest positive coefficient of 26.0703631 and is statistically significant because has a P-Value less than 0.05
+
+__Effect of selling a higher proportion of alternative beverages on the chance of having above median units sold__
+
+Selling a higher proportion of alternative beverages (variable "altbev_units_per") __increases__ the chance of having above median units sold. We know this because "altbev_units_per" has a coefficient of 7.2688615, which means that 1 unit increase in the "altbev_units_per" variable, will increase the median units sold by around 7.2688615.
+
+__Effect of selling a higher proportion of velocity B units on the chance of having above median units sold__
+
+Neither increase nor decrease the chance of having the above median units sold. We know this because the coefficient of "velocityB_units_per" is 5.1015780 but the associate p-value of 0.118557 is greater 0.05, which indicates that the coefficient for the said variable is not statistically significance. In addition, this indicates that there is not enough evidence to conclude that selling a higher proportion of velocity B units will significantly affect, whether increase or decrease, the chance of having above median units sold.
+
+__Examining the accuracy of the predictions on the test data by answering whether there are more true positives or more true negatives.__
+
+There are more True Negatives (972) than True Positives (942).
+
+__First store in the ‘full_test’ dataset that has a “WRONG!” prediction__
+
+__Store 186__ located in ONTARIO region. This is true when stores are sorted by the ‘store’ feature in an ascending manner (lowest number first).
+
+__Why training data is used for the model training step__
+
+We use the __data-training__ because it checks the quality and performance on how well the model generalizes new and unseen data. 
+
+__Level of the variable is not present but accounted for in the intercept term__
+
+The level on the variable not present is but is accounted for in the intercept term is __ONTARIO__. 
+
+The feature ‘region’ has changed in the summary of the trained model. Further, only three regions show up in the summary of the model. The reasoning for this is that the ‘glm()’ function automatically recognizes that ‘region’ is a categorical variable (specifically a factor in R). Thus, the ‘glm()’ function has created “dummy variables” for the levels of ‘region’. 
+
+__Interpreting the confusion matrix using the test/holdout data - hgihest value__
+
+The __Negative Predictive Value (NPV)__ has the highest value of 0.7708. This means that the model is good at making predictions that a predicted negative outcome is actually negative. The model is 77.08% accurate when it comes to predicitng negative outcome.
+
+
+__Interpreting the confusion matrix - lowest value__
+
+The __Precision, Positive Predictive Value__ has the lowest value of 0.7500. This means that the model is not as good at making predictions that a predicted positive outcome is actually positive. The model is 75% accurate when it comes to predicting positive outcome.
+
+__Interpreting the confusion matrix - highest concern for NANSE__
+
+In NANSE's business setting, the measure that NANSE care about the most is __Sensitivity__, which represents the proportion of weeks and stores with above-median sales taht are correctly identified on the model. NANSE would care about __Sensitivity__ because the store would want to ensure that the model will correctly capture instances of higher traffic and lessen the risk of false negatives. Meaning, NANSE will want to ensure that they minimize instances that theiir model fails to correctly predict above median sales when they occur, which could adversely impact business decisions in critical areas such as inventory management and resource allocation (e.g., marketing costs).
