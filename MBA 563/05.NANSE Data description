@@ -1,0 +1,20 @@
+Title:	"mod6HE_logit.rds"
+Summary:	These data are weekly sales by store for 2015. Thus, the data are aggregated by store and week. Thus, each example/row represents data from one week from one store. Thus, most stores have 52 observations, each (one for each week). 
+
+store: A number identifying a unique store. 
+week: The number of the week of the year
+high_med_gp: An indicator variable that equals 1 when the gross profit for that store for that week was above the median and 0 otherwise
+high_med_rev: An indicator variable that equals 1 when the revenue for that store for that week was above the median and 0 otherwise
+high_med_units: An indicator variable that equals 1 when the number of units sold for that store for that week was above the median and 0 otherwise
+high_med_gpm: An indicator variable that equals 1 when the gross profit margin for that store for that week was above the median and 0 otherwise
+size: The average per week number of unique products available for sale from that store.
+region: The region in which the store is located
+promo_units_per: The proportion of units out of 1.0 that were sold at a promotional price versus a normal price
+altbev_units_per: The proportion of units out of 1.0 that were sold that were products in the "alternative beverages" category of products
+confect_units_per: The proportion of units out of 1.0 that were sold that were products in the "confectionery" category of products
+salty_units_per: The proportion of units out of 1.0 that were sold that were products in the "salty snacks" category of products
+velocityA_units_per: The proportion of units out of 1.0 that were sold that were products in the "velocity A group" of products. Velocity measures sales per point of distribution. Velocity A products are the highest selling group of products and the majority of a store's sales.
+velocityB_units_per: The proportion of units out of 1.0 that were sold that were products in the "velocity B group" of products. Velocity measures sales per point of distribution. Velocity B products are the second highest selling group of products.
+velocityC_units_per: The proportion of units out of 1.0 that were sold that were products in the "velocity C group" of products. Velocity measures sales per point of distribution. Velocity C products are the third highest selling group of products and may be rarer products and product line extensions.
+velocityD_units_per: The proportion of units out of 1.0 that were sold that were products in the "velocity D group" of products. Velocity measures sales per point of distribution. Velocity D products are the lowest selling group of products and are usually candidates for discontinuation.
+velocityNEW_units_per: The proportion of units out of 1.0 that were sold that were products in the "velocity NEW group" of products. Velocity measures sales per point of distribution. Velocity NEW products are the new products that have not been put into a velocity group yet. 
