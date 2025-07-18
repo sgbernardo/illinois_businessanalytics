@@ -1,0 +1,16 @@
+# About the data: 
+*This data is about wine quality and how different factors predict wine quality. The source of data is in Kaggle: https://www.kaggle.com/datasets/uciml/red-wine-quality-cortez-et-al-2009
+
+# Brief description of each column:
+fixed.acidity - the amount of acid that do not readily evaporate
+volatile.acidity - amount of acetic acid in wine, which can adversely affect taste
+citric.acid - amount of citric acid in wine, which helps in the taste of the wine
+residual.sugar - amount of sugar post-fermentation
+chlorides - salt content in the wine
+free.sulfur.dioxide - the amount of free sulfur oxide, which prevents microbial growth and oxidation of the wine
+total.sulfur.dioxide - the total amount of sulfur oxide (includes free and bound forms)
+density - density of water 
+pH - the acidity and basic of the wine, where a lower number indicates acidic. 
+sulphates - amount of sulphates, which can boost anti-microbial protection
+alcohol - alcohol content in wine
+quality - score between 0 to 10 based on scoring by wine tasters
