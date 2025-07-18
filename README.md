@@ -41,6 +41,19 @@ This project covers regression analysis of loan data, where we examined how fact
 
 On top of profit, as examined in the Exploratory Data Analysis of NANSE Sales Data (NANSE_EDA) project, NANSE is also wants to predict higher traffic in stores. Specifically, management wanted to predict which weeks and stores will sell above the median number of units. Generalized Linear Models (GLM) techniques was used to understand how different variables affect the number of units sold (high_med_units). From here, the model was further trained using predict function on the training data provided. We used the test data to find the confusion matrix.
 
+**6. Predicting Wine Quality Through Linear Regression (wine_quality_prediction)**
+
+The project used linear regression to investigate the relationship between different factors such as acidity, free sulfur oxide, and pH on the quality of wine.  The dependent variable/target in this explanatory model would be quality while the independent variables are volatile.acidity, chlorides, total.sulfur.dioxide, density, pH, sulphates, alcohol. The knowledge derived from the explanatory model provides insights that brings informed and strategic decision-making across various aspects of winery operations. For example, wineries can improve wine quality by revisiting the wine making methods to increase wine sales.
+
+**7. KNN and Decision Trees Modeling Using NANSE Sales Data (KNN_DecisionTrees)**
+
+The project covers how KNN and Decision Trees Modeling algorithms can be used to drive sales strategy by understanding consumer behavior. Based from the data, it was found that the Decision Tree model had the highest precision based from the PPV value, whereas KNN was the second-best model for precision. This meant that NANSE should use the Decision Tree model that shows them which stores in a given week will likely sell above median units while achieving high degree of accuracy. 
+
+**8. KMeans and DBSCAN Algorithms (KMeans_DBSCAN)**
+
+The project covers how Means and DBSCAN algorithms can be used to drive sales strategy by understanding consumer behavior. In this setting, NANSE wanted to get a better sense of how its stores in different parts of the country behave. They specifically wish to further understand geographical sales patterns for each city by grouping them together based on sales history. It was found that KMeans works better to determine the clusters of the data because there were outliers in the data. 
+
+
 ### MBA 564A - Applying Data Analytics in Marketing
 **1. Data Wrangling using R: Application to Netflix Data**
 
