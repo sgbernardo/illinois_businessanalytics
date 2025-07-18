@@ -1,0 +1,89 @@
+---
+title: "Predicting Wine Quality Through Linear Regression"
+author: "Stephen Bernardo"
+date: "2023-12-10"
+output: 
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Installing Packages
+
+```{r}
+#install.packages('tidyverse')
+```
+
+## Loading Libraries
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+library(magrittr)
+```
+
+```{r}
+library(lubridate)
+```
+
+```{r}
+library(corrplot)
+```
+
+## Reading the data set
+
+```{r}
+df <- read.csv('winequality-red.csv')
+```
+
+
+## Checking the structure and summary to see if data types are correct
+
+Make sure that all columns to be used in the analysis are set to the correct data types.
+
+```{r}
+str(df)
+```
+
+```{r}
+summary(df)
+```
+
+The concept of training and testing sets is often associated with predictive modeling, it still makes sense to use a similar approach in explanatory modeling
+
+## Linear Regression Model
+
+```{r}
+#install.packages("caTools")
+library(caTools)
+
+set.seed(123)
+
+split <- sample.split(df$quality, SplitRatio = 0.8)
+dftrain <- subset(df, split == TRUE)
+dftest <- subset(df, split == FALSE)
+
+# Linear Regression Model
+model <- lm(quality ~ volatile.acidity + chlorides + total.sulfur.dioxide + density + pH + sulphates + alcohol, data = dftrain)
+summary(model)
+
+predictions <- predict(model, newdata = dftest)
+```
+
+## Reporting model performance
+
+The business problem calls for an explanatory model, where we need to investigate the relationship of different chemical metrics (volatile.acidity, chlorides, total.sulfur.dioxide, density, pH, sulphates, alcohol) on quality.
+
+Linear regression was chosen as the preferred machine learning because it provides an analysis to study the relationships between variables. In this setting, linear regression is in line with the objective of trying to understand how different chemical metrics affect quality of wine.
+
+The output model presents one statistically insignificant variable while the rest of the variables are statistically significant. volatile.acidity, chlorides, total.sulfur.dioxide, pH, sulphates, and alcohol has an impact on the quality of the wine, where we can observe from the output above that all the p-values are less than 0.05. On the other hand, density is not statistically significant because the p-value of 0.843920 is above the 0.05 threshold.
+
+Based from this model, we can make recommendations to improve wine quality. We can tell the winery to consider adjusting their wine-making process to improve volatile.acidity, chlorides, total.sulfur.dioxide, pH, sulphates, and alcohol. The density of the wine may not be a strong indication of quality. The winery should investigate the quality of wine and determine which step of the wine-making process will need improvement (ex. aging and storage). 
+
+The linear regression model provides insights into the relationship between chemical metrics (volatile.acidity, chlorides, total.sulfur.dioxide, density, pH, sulphates, alcohol) and quality of the wine produced. These findings could help refine the wine production process, allocate budgets (e.g., the need for new wine equipment and quality raw material). Looking at the Adjusted R-squared of 0.3464, another recommendation is to consider additional variables outside of chemical composition in order to further determine other factors that affect quality (ex: room temperature, cleanliness of the barrels measured by microbial levels).
