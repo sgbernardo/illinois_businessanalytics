@@ -33,6 +33,10 @@ NANSE owns over 700 small-form convenience stores in Canada. This project made u
 
 The box plot indicates that there were outliers, with some stores having significantly higher revenue than the average store. In terms of gross profit, stores in Ontario (ON) have the highest aggregate gross profit in Canada. The product correlation matrix shows that gum and psd951M product categories sell together the least while candy and take home potato products sell together the most.
 
+**4. Loan Application Regression Analysis (loan_regression_analysis)**
+
+This project covers regression analysis of loan data, where we examined how factors such as loan amount, ltp, and income affect interest rates of approved loans. 
+
 ### MBA 564A - Applying Data Analytics in Marketing
 **1. Data Wrangling using R: Application to Netflix Data**
 
