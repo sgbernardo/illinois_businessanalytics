@@ -1,0 +1,155 @@
+---
+title: "Exploratory Data Analysis of NANSE Sales Data"
+author: "Stephen Bernardo"
+date: "10/30/2023"
+output: 
+  pdf_document: default
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading the necessary packages
+```{r}
+# Load any libraries here
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+```
+
+
+## Loading the Nanse store Data
+
+```{r}
+df <- read.csv('store_3HE.csv')
+```
+
+## Understanding the data structure of raw data
+
+```{r}
+#Understanding the data structure
+str(df)
+```
+
+
+```{r}
+#Data summary
+summary(df)
+```
+
+```{r}
+#Using head function
+head(df,10)
+```
+
+```{r}
+#Using tail function
+tail(df,10)
+```
+
+```{r}
+#Using slice_sample function
+slice_sample(df, n=10)
+```
+```{r}
+#Using unique function
+unique(df)
+```
+
+```{r}
+#Using n_distinct function
+n_distinct(df)
+```
+
+Brief summary of what I learned.
+
+1. There are 771 observations and 20 variables. Out of the 20 variables, one variable named __revenue__ is a character type, which means it needs to be converted to numerical type.
+
+2. One variable named __size__ has 15 null values, indicated by the NA's in the summary results. Hence, this column will need to be deleted in Task 4.
+
+## Converting __revenue__ to numeric data type
+
+```{r}
+df$revenue <- as.numeric(df$revenue)
+```
+
+## Deleting rows with missing values
+
+```{r}
+df_new <- na.omit(df)
+```
+
+## Creating the df_low and df_high data frames
+
+__df_low__ contains data on all the stores with revenue less than the average revenue for the complete data set (df_new)
+
+__df_high__ contains data on all the stores with revenue more than the average revenue for the complete data set (df_new)
+
+```{r}
+df_high <- df_new %>% filter(revenue > mean(df_new$revenue))
+
+df_low <- df_new %>% filter(revenue < mean(df_new$revenue))
+
+# Finding the mean
+mean(df_high$size)
+mean(df_low$size)
+```
+
+Relationship between __revenue__ and __size__ based on means:
+There is a direct relationship between revenue and size, where we can see that stores __above the average revenue__ (in df_high dataframe) have a __larger average store size__. On the other hand, we can see that stores __below the average revenue__ (in df_high dataframe) have a __smaller average store size__.
+
+## Correlation betweeen __revenue__ and __size__  
+
+```{r}
+#Calculating the correlation
+cor(df_new$revenue,df_new$size)
+```
+
+```{r}
+#Plotting the relationship
+ggplot(df_new,aes(x=revenue,y=size)) + geom_point()
+```
+
+
+The output above shows that there is a positive relationship between revenue and size, where we see that there is a correlation coefficient of 0.61. In addition, we can see from the scatter plot that there is a positive relatioship between revenue and size because we see that a higher revenue would mean a higher store size.
+
+## Boxplots of __revenue__ for each region
+
+```{r}
+ggplot(df_new,aes(x=region,y=revenue)) + geom_boxplot()
+```
+
+Distribution of __revenue__ within each __region__:
+
+We can see that there is no significant difference between the median revenues for all regions. However, we can see from the box and whisker plot that there is a significant difference as to the mean and the number of outliers, especially in the __West__ region.
+
+## Bar chart of __gross_profit__ for each province
+
+```{r}
+ggplot(df_new,aes(x=province,y=gross_profit)) + 
+  geom_col() 
+```
+
+Based from the height of the bar charts, we can see that province ON has the highest amount of gross profit followed by QC and AB. On the other hand, the province with the lowest gross_profit is PE.
+
+## Correlation matrix of average store sales for product categories  
+
+```{r}
+
+df_filtered <- df %>%
+  select(energy_units, regularBars_units, gum_units, bagpegCandy_units, isotonics_units, singleServePotato_units, takeHomePotato_units, kingBars_units, flatWater_units, psd591Ml_units)
+
+cor(df_filtered)
+```
+
+1. Product categories that sell together the least.
+
+__gum_units__ and __psd591Ml_units__ with a correlation of __0.5951027__
+
+2. Product categories that sell together the most.
+
+__bagpegCandy_units__ and __takeHomePotato_units__ with a correlation of __0.9254152__
